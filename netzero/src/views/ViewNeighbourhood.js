@@ -39,15 +39,17 @@ const [precint, setprecint] = useState()
           <Button color="danger" onClick={toggle}>Cancel</Button>
         </ModalFooter>
       </Modal>
-      <Button color="danger" onClick={toggle}>Create precinct</Button>
-           {data.neighbourhood}
+   
+           <h1>{data.neighbourhood}</h1>
            <div>
+           <Button color="danger" onClick={toggle}>Create precinct</Button>
            {precinct.length  === 0 ? <><p>You have no precinct</p>     
                 </> : 
                 <>
+                <h4>List of Precincts</h4>
                 {precinct.map((nb)=>(
                     <p>
-                 <Link to={{pathname:"/viewNeighbourhood",state: nb}}>{nb.precint}</Link>
+                 <Link to={{pathname:"/viewPrecinct/"+nb.id,state: nb}}>{nb.precint}</Link>
                  </p>
                 ))}
                 </>

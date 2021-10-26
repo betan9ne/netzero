@@ -2,7 +2,7 @@ import React,{useEffect, useState} from 'react'
 import firebase from '../../src/firebase'
 import {useHistory, Link} from 'react-router-dom'
 import useGetNeighbourhood from '../hooks/useGetNeighbourhood'
-import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Input } from 'reactstrap';
+import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Col, Row, Input, Container } from 'reactstrap';
 
 function Neighbourhood() {
 
@@ -13,7 +13,7 @@ function Neighbourhood() {
 
     const logout = ()=>{
         firebase.auth().signOut().then(() => {
-            history.push("/")
+        
           }).catch((error) => {
             alert(error)
           });
@@ -46,21 +46,34 @@ function Neighbourhood() {
           <Button color="danger" onClick={toggle}>Cancel</Button>
         </ModalFooter>
       </Modal>
+            <div style={{background:"#fdb940", padding:20}}>
+                <Row>
+                    <Col><h1 style={{color:"white"}}>Neighbourhoods</h1></Col>
+                    <Col> <Button color="info" onClick={toggle}>Create neighbourhood</Button>
+                    <Button color="danger"  style={{marginLeft:20 }}onClick={()=>logout()}>Logout</Button></Col>
+                    </Row>           
+            </div>
+            
+<Container>
+    <Row>
+        <Col xs="3"> <p>List of Neighbourhoods</p>
+           
+           {neighbourhoods.length  === 0 ? <><p>You have no neighbourhoods</p>     
+           </> : 
+           <>
+           {neighbourhoods.map((nb)=>(
+               <p style={{marginBottom:40}}>
+            <Link style={{background:"#fdb940", padding:15, width:200, borderRadius:15, fontSize:18, color:"black", marginBottom:30 }} to={{pathname:"/viewNeighbourhood/"+nb.id,state: nb}}>{nb.neighbourhood}</Link>
+            </p>
+           ))}
+           </>
+           }</Col>
+        <Col xs="6"><p>Statistics</p></Col>
+        <Col xs="3"><p>Summary</p></Col>
 
-            <h1>Neighbourhoods</h1>
-<Button color="danger" onClick={()=>logout()}>Logout</Button>
-            <h3>List of Neighbourhoods</h3>
-            <Button color="danger" onClick={toggle}>Create neighbourhood</Button>
-                {neighbourhoods.length  === 0 ? <><p>You have no neighbourhoods</p>     
-                </> : 
-                <>
-                {neighbourhoods.map((nb)=>(
-                    <p>
-                 <Link to={{pathname:"/viewNeighbourhood",state: nb}}>{nb.neighbourhood}</Link>
-                 </p>
-                ))}
-                </>
-                }
+    </Row>
+</Container>
+           
             <div></div>
         </div>
     )
