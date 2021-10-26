@@ -1,7 +1,7 @@
 import React,{useEffect, useState} from 'react'
 import firebase from '../../src/firebase'
 import {useHistory, Link} from 'react-router-dom' 
-import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Input } from 'reactstrap';
+import { Button, Modal, ModalHeader, ModalBody, Container, Row, Col, ModalFooter, Input } from 'reactstrap';
 import useGetBlocks from '../hooks/useGetBlocks';
 
 
@@ -42,6 +42,21 @@ const ViewPrecinct = props => {
         </ModalFooter>
       </Modal>
    
+      <div style={{background:"#fdb940", padding:20}}>
+                <Row>
+                    <Col><h1 style={{color:"white"}}>Neighbourhoods</h1></Col>
+                    <Col> <Button color="info" onClick={toggle}>Create neighbourhood</Button>
+                 </Col>
+                    </Row>           
+            </div>
+            
+   <Container>
+       <Row>
+       <Col xs="3" style={{padding:"20px"}}> <h3>Neighbourhoods</h3><br/></Col>
+         <Col xs="6"></Col>
+           <Col  xs="3"></Col>
+       </Row>
+   </Container>
             <h1>{data.precint}</h1>
             <Button color="danger" onClick={toggle}>Create Block</Button>
            {blocks.length  === 0 ? <><p>You have no blocks</p>     

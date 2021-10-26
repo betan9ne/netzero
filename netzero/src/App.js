@@ -35,8 +35,7 @@ useEffect(() => {
             <Route path="/viewPrecinct/:id" component={ViewPrecinct}></Route>
             <Route path="/setSites/:id" component={SetSites}></Route>
             <Route path="/viewBlock/:id" component={ViewBlock}></Route>
-            <Route path="/"><Neighbourhood/></Route>     
-              
+            <Route path="/"><Neighbourhood/></Route>                   
             </Switch>
             </div>
             </Router>
