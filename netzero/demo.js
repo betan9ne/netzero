@@ -35,3 +35,10 @@
         //     console.log(`${key}: ${Residential[key]}`);
         //     }
         // }
+
+           {/* <Col>
+            Set Site values<br/><br/>
+            {site} - {tag}
+            <Input type="number" required value={siteValue} onChange={e =>setsiteValue(e.target.value)} placeholder="site value" /><br/>
+            <Button color="primary" onClick={()=>updateObject(site)}>Confirm</Button>
+            </Col> */}

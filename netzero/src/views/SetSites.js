@@ -17,10 +17,10 @@ const SetSites = props => {
 
     const [Residential, setResidential] = useState(
         {
-            "Low_Density": 0,
-            "Low_Density_Pool": 0,
-            "Medium_Density" : 0,
-            "High_Density": 0
+            "Low_Density": null,
+            "Low_Density_Pool": null,
+            "Medium_Density" : null,
+            "High_Density": null
         })
         let ResidentialArray = []
  
@@ -29,7 +29,8 @@ const SetSites = props => {
               keys.forEach((key, index) => {
                let asd = {
                    site: key,
-                   value : Residential[key]
+                   value : Residential[key],
+                   tag : "Residential"
                }
              ResidentialArray.push(asd)    
              });
@@ -70,32 +71,30 @@ const SetSites = props => {
     }
     
     const addSite = ()=>{
-        if(siteValue === 0)
-        {
-            alert("Please enter a valid value")
-            return
-        }
-        if(site.length === 0)
-        {
-            alert("Please select a site to get started")
-            return
-        }
-        firebase.firestore().collection('sites').add(
-            {
-            precinct_id: data.precinct_id,
-            neighbourhood_id: data.neighbourhood_id,
-            block_id: data.id,
-            site_name: site,
-            site_tag:tag,
-            site_value: parseInt(siteValue),
-            createdAt: new Date().toLocaleDateString()
-            }).then(()=>{
-            setsite("")
-            setsiteValue("")
-            settag("")
-        }).catch((e)=>{
-            alert(JSON.stringify(e))
-        })
+        let total = 0
+        residentailArray.forEach(element => {
+            total = total + element.value
+        });
+        console.log(total)
+        // residentailArray.forEach(element => {
+        //     firebase.firestore().collection('sites').add(
+        //         {
+        //         precinct_id: data.precinct_id,
+        //         neighbourhood_id: data.neighbourhood_id,
+        //         block_id: data.id,
+        //         site_name: element.site,
+        //         site_tag: element.tag,
+        //         site_value: parseInt(element.value),
+        //         createdAt: new Date().toLocaleDateString()
+        //         }).then(()=>{
+        //         setsite("")
+        //         setsiteValue("")
+        //         settag("")
+        //     }).catch((e)=>{
+        //         alert(JSON.stringify(e))
+        //     })
+        // });
+        
     }
 
     return (
@@ -111,13 +110,13 @@ const SetSites = props => {
            
                 <Container>
         <Row>
-            <Col xs="6">
+            <Col xs="8">
                 <h6>Residential</h6>
               {residentailArray.map((rA, index)=>(
                   <div>
                   
                   <Row>
-                      <Col xs="2"><Input type="number" required defaultValue={rA.value} onChange={(e) => setsiteValue(e.target.value)} placeholder="site value" /></Col>
+                      <Col xs="2"><Input type="number" required onChange={(e) => setsiteValue(e.target.value)} placeholder="0" /></Col>
                       <Col> <p key={index} onClick={()=>setSiteInfo(rA.site.replaceAll("_", " "),"Residential")}>
                  {rA.site.replaceAll("_", " ")}
                  </p></Col>
@@ -129,25 +128,21 @@ const SetSites = props => {
                  </div>
               ))}
             </Col>
-            {/* <Col>
-            Set Site values<br/><br/>
-            {site} - {tag}
-            <Input type="number" required value={siteValue} onChange={e =>setsiteValue(e.target.value)} placeholder="site value" /><br/>
-            <Button color="primary" onClick={()=>updateObject(site)}>Confirm</Button>
-            </Col> */}
-            <Col>Site Summary<br/>
-                <h4>{resideintalTotal}</h4>
-            {sites && sites.map((site)=>(
-                <div>
+         
+            <Col  xs="4">Site Summary<br/>
+                   
+                {residentailArray.map((rA)=>(
+                    rA.value=== null ? null : 
+                    <Row>
+                        <Col><b>{rA.site}</b></Col>
+                        <Col><p style={{textAlign:"right"}}>{rA.value}</p></Col>
+                    </Row>
                     
-                <h6>{site.site_name} - {site.site_value}</h6>
-                <Button color="danger" onClick={()=>deleteSite(site.id)}>Delete</Button>
-                </div>
-            ))}
+                ))}
+                <Button color="primary" onClick={()=>addSite()}>Add Sites</Button>
+            
             </Col>
-            <Col>
-                {JSON.stringify(Residential)}
-            </Col>
+            
         </Row>
      </Container>
         </div>
