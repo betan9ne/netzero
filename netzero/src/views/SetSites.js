@@ -10,7 +10,31 @@ const SetSites = props => {
     const [site, setsite] = useState("")
     const [siteValue, setsiteValue] = useState(0)
     const [tag, settag] = useState("")
+    const [residentailArray, setresidentailArray] = useState([])
+    const [resideintalTotal, setResidentialTotal] = useState(0)
+
     let sites = useGetSites(data.id).docs
+
+    const [Residential, setResidential] = useState(
+        {
+            "Low_Density": 0,
+            "Low_Density_Pool": 0,
+            "Medium_Density" : 0,
+            "High_Density": 0
+        })
+        let ResidentialArray = []
+ 
+        useEffect(() => {
+            const keys = Object.keys(Residential);
+              keys.forEach((key, index) => {
+               let asd = {
+                   site: key,
+                   value : Residential[key]
+               }
+             ResidentialArray.push(asd)    
+             });
+            setresidentailArray(ResidentialArray)
+        }, [Residential])
 
     const deleteSite =(id) =>{
         firebase.firestore().collection("sites").doc(id).delete().then(()=>{
@@ -24,7 +48,27 @@ const SetSites = props => {
             setsite(sitename)
             settag(siteTag)
     }
+    const updateObject = (key) =>{
+        let newKey = key.replaceAll(" ", "_")
+        setResidential(prevResidential =>({...prevResidential, [newKey]:parseInt(siteValue)}))
+       
+        const keys = Object.keys(Residential);
+       
+        keys.forEach((key, index) => {
+            console.log(key)
+            setResidentialTotal(prevResidentialTotal=>(prevResidentialTotal + Residential[key]))
+         //totalResidential=  totalResidential + Residential[key]
+       
+        });
+     //   setResidentialTotal(totalResidential)
+    
+        
+    }
+ 
+    const handleChange = () =>{
 
+    }
+    
     const addSite = ()=>{
         if(siteValue === 0)
         {
@@ -56,48 +100,43 @@ const SetSites = props => {
 
     return (
         <div>
-            <b>{data.block}</b>
+            <div style={{background:"#fdb940", padding:20}}>
+                <Row>
+                    <Col><h1 style={{color:"white"}}>Sites</h1>
+                    <h4>{data.block}</h4></Col>
+                    <Col>  
+                 </Col>
+                    </Row>           
+            </div>
+           
                 <Container>
         <Row>
-            <Col>
-            <b>Residential</b>
-            <p onClick={()=>setSiteInfo("Low density","Residential")}>Low density</p>
-            <p  onClick={()=>setSiteInfo("Low density Pool","Residential")}>Low Density Pool</p>
-            <p onClick={()=>setSiteInfo("Medium density","Residential")}>Medium Density</p>
-            <p  onClick={()=>setSiteInfo("High density","Residential")}>High Density</p>
-            <b>Commercial or Other</b>
-            <p onClick={()=>setSiteInfo("Business & Commercial","Commercial")}>Business & Commercial</p>
-            <p onClick={()=>setSiteInfo("Education","Commercial")}>Education</p>
-            <p onClick={()=>setSiteInfo("Residential","Commercial")}>Residential</p>
-            <p onClick={()=>setSiteInfo("Office","Commercial")}>Office</p>
-            <p onClick={()=>setSiteInfo("Religious","Commercial")}>Religious</p>
-            <p onClick={()=>setSiteInfo("Government","Commercial")}>Government</p>
-            <p onClick={()=>setSiteInfo("Public Open Space","Commercial")}>Public Open Space</p>
-            <p onClick={()=>setSiteInfo("Vacant Land","Commercial")}>Vacant Land</p>
-            <p onClick={()=>setSiteInfo("Public Service Infrastructure","Commercial")}>Public Service Infrastructure</p>
-            <b>Infrastructure</b>
-            <p onClick={()=>setSiteInfo("Street Lights","Infrastructure")}>Street Lights</p>
-            <p onClick={()=>setSiteInfo("Traffic Lights","Infrastructure")}>Traffic Lights</p>
-            <b>Transport</b>
-            <p onClick={()=>setSiteInfo("Small petrol","Transport")}>Small petrol</p>
-            <p onClick={()=>setSiteInfo("Small Diesel","Transport")}>Small Diesel</p>
-            <p onClick={()=>setSiteInfo("Medium Petrol","Transport")}>Medium Petrol</p>
-            <p onClick={()=>setSiteInfo("Medium Diesel","Transport")}>Medium Diesel</p>
-            <p onClick={()=>setSiteInfo("Large Petrol","Transport")}>Large Petrol</p>
-            <p onClick={()=>setSiteInfo("Large Diesel","Transport")}>Large Diesel</p>
-            <b>Warehouse</b>
-            <p onClick={()=>setSiteInfo("Light industrial","Warehouse")}>Light industrial</p>
-            <p onClick={()=>setSiteInfo("Medium industrial","Warehouse")}>Medium industrial</p>
-            <p onClick={()=>setSiteInfo("High industrial","Warehouse")}>High industrial</p>
-
+            <Col xs="6">
+                <h6>Residential</h6>
+              {residentailArray.map((rA, index)=>(
+                  <div>
+                  
+                  <Row>
+                      <Col xs="2"><Input type="number" required defaultValue={rA.value} onChange={(e) => setsiteValue(e.target.value)} placeholder="site value" /></Col>
+                      <Col> <p key={index} onClick={()=>setSiteInfo(rA.site.replaceAll("_", " "),"Residential")}>
+                 {rA.site.replaceAll("_", " ")}
+                 </p></Col>
+                      <Col>
+                      <Button color="primary" onClick={()=>updateObject(rA.site)}>Confirm</Button>
+                      </Col>
+                  </Row>
+                
+                 </div>
+              ))}
             </Col>
-            <Col>
+            {/* <Col>
             Set Site values<br/><br/>
             {site} - {tag}
             <Input type="number" required value={siteValue} onChange={e =>setsiteValue(e.target.value)} placeholder="site value" /><br/>
-            <Button color="primary" onClick={addSite}>Confirm</Button>
-            </Col>
+            <Button color="primary" onClick={()=>updateObject(site)}>Confirm</Button>
+            </Col> */}
             <Col>Site Summary<br/>
+                <h4>{resideintalTotal}</h4>
             {sites && sites.map((site)=>(
                 <div>
                     
@@ -105,6 +144,9 @@ const SetSites = props => {
                 <Button color="danger" onClick={()=>deleteSite(site.id)}>Delete</Button>
                 </div>
             ))}
+            </Col>
+            <Col>
+                {JSON.stringify(Residential)}
             </Col>
         </Row>
      </Container>

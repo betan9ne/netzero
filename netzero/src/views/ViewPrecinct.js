@@ -11,6 +11,8 @@ const ViewPrecinct = props => {
     let blocks = useGetBlocks(data.id).docs
     const [modal, setModal] = useState(false);
     const [block, setblock] = useState()
+    const [b, setb] = useState([])
+
     const toggle = () => setModal(!modal);
   
     const addblock = ()=>{
@@ -27,7 +29,6 @@ const ViewPrecinct = props => {
     }
     const externalCloseBtn = <button className="close" style={{ position: 'absolute', top: '15px', right: '15px' }} onClick={toggle}>&times;</button>;
  
-
     return (
         <div>
             <Modal isOpen={modal} toggle={toggle}   external={externalCloseBtn}>
@@ -44,32 +45,36 @@ const ViewPrecinct = props => {
    
       <div style={{background:"#fdb940", padding:20}}>
                 <Row>
-                    <Col><h1 style={{color:"white"}}>Neighbourhoods</h1></Col>
-                    <Col> <Button color="info" onClick={toggle}>Create neighbourhood</Button>
+                    <Col><h1 style={{color:"white"}}>Blocks</h1>
+                    <h4>{data.precint}</h4></Col>
+                    <Col>  <Button color="danger" onClick={toggle}>Create Block</Button>
                  </Col>
                     </Row>           
             </div>
             
    <Container>
        <Row>
-       <Col xs="3" style={{padding:"20px"}}> <h3>Neighbourhoods</h3><br/></Col>
-         <Col xs="6"></Col>
-           <Col  xs="3"></Col>
-       </Row>
-   </Container>
-            <h1>{data.precint}</h1>
-            <Button color="danger" onClick={toggle}>Create Block</Button>
-           {blocks.length  === 0 ? <><p>You have no blocks</p>     
+       <Col xs="3" style={{padding:"20px"}}><h3>Blocks</h3><br/>
+       {blocks.length  === 0 ? <><p>You have no blocks</p>     
                 </> : 
                 <>
-                <h4>List of Blocks</h4>
                 {blocks.map((nb)=>(
-                    <p>
-                 <Link to={{pathname:"/viewBlock/"+nb.id,state: nb}}>{nb.block}</Link>
+                    <p style={{mbackground:"#fdb940", border:"2px solid #000000", borderColor: "black",textAlign: "center",  padding:15, width:200, borderRadius:15, fontSize:18, color:"black", marginBottom:30 }}>
+                    {/* to={{pathname:"/viewBlock/"+nb.id,state: nb}} */}
+                 <a onClick={()=>setb(nb)} style={{color:"black", cursor: "pointer",fontWeight:"bold",}}  >{nb.block}</a>
                  </p>
                 ))}
                 </>
                 }
+       </Col>
+         <Col xs="6" style={{padding:"40px"}}>
+        {b.id === undefined ? null :  <Link to={{pathname:"/setSites/"+b.id,state: b}} style={{color:"white", background:"#333",
+        borderRadius:"10px", padding:"10px 30px"}}>Assign Site</Link>}
+         </Col>
+           <Col  xs="3"></Col>
+       </Row>
+   </Container>
+         
         </div>
     )
 }
