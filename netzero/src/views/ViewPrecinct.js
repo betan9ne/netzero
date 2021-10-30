@@ -5,6 +5,7 @@ import { Button, Modal, ModalHeader, ModalBody, Container, Row, Col, ModalFooter
 import useGetBlocks from '../hooks/useGetBlocks';
 import { PolarArea } from "react-chartjs-2";
 
+
 const ViewPrecinct = props => {
     let history = useHistory()
     let data = props.location.state
@@ -15,13 +16,8 @@ const ViewPrecinct = props => {
     const [docs, setdocs] = useState([])
     const [labels, setlabels] = useState([])
     const [_data, setdata_] = useState([])
-
+    const [filter, setfilter] = useState([])
     const toggle = () => setModal(!modal);
-  
-console.log(labels)
-
-
-
 
     const data_ = {
         labels:labels,
@@ -57,11 +53,12 @@ console.log(labels)
     }
 
     const viewSiteInfo = (nb) =>{
-        let label = []
-        let data = []
+        
+        let neighbourhood = [];
+        let filter_ = []
         setb(nb)
          firebase.firestore().collection("sites").where("block_id","==", nb.id).get().then((doc)=>{
-            const neighbourhood = [];
+        
             doc.docs.forEach(document => {
               const nb = {
                 id: document.id,
@@ -70,19 +67,49 @@ console.log(labels)
               neighbourhood.push(nb)
             })
 
-            doc.docs.forEach(element => {
-                label.push(element.data().site_name)
-            });
-
-            doc.docs.forEach(element => {
-                data.push(element.data().site_value)
-            });
-            setdata_(data)            
-            setlabels(label)
+            getDataandLabels(neighbourhood)
+          
             setdocs(neighbourhood)
 
+              let result
+              let abc =  neighbourhood.reduce((r, e) =>{
+                let l = e.site_tag
+                if(!r[l])r[l] = {l, _tag:[e]}
+                else r[l]._tag.push(e)
+                return r
+              }, {}) 
+               result = Object.values(abc)
+                   result.map(c =>(
+                 filter_.push(c.l)     
+                 
+              ))
+              setfilter(filter_)
+                    })
+    }
 
-        })
+    const getDataandLabels = (_data) =>{
+        let label = []
+        let data = []
+        _data.forEach(element => {
+        //    console.log(element)
+            label.push(element.site_name)
+        });
+
+        _data.forEach(element => {
+            data.push(element.site_value)
+        });
+        setdata_(data)            
+        setlabels(label)
+    }
+
+    const filterChart = (filter) =>{
+      let newData = docs
+        var filteredData =  newData.filter(function(tag) {
+            return tag.site_tag === filter;
+          });
+          getDataandLabels(filteredData)
+          setdocs(filteredData)
+        
     }
     const externalCloseBtn = <button className="close" style={{ position: 'absolute', top: '15px', right: '15px' }} onClick={toggle}>&times;</button>;
  
@@ -116,7 +143,7 @@ console.log(labels)
                 </> : 
                 <>
                 {blocks.map((nb)=>(
-                    <p style={{background:nb.id === b.id ? "#fdb940" : "#ffffff", border:"2px solid #000000", borderColor: "black",textAlign: "center",  padding:15, width:200, borderRadius:15, fontSize:18, color:"black", marginBottom:30 }}>
+                    <p key={nb.id} style={{background:nb.id === b.id ? "#fdb940" : "#ffffff", border:"2px solid #000000", borderColor: "black",textAlign: "center",  padding:15, width:200, borderRadius:15, fontSize:18, color:"black", marginBottom:30 }}>
                     {/* to={{pathname:"/viewBlock/"+nb.id,state: nb}} */}
                  <a onClick={()=>viewSiteInfo(nb)} style={{color:nb.id === b.id ? "white":"black", cursor: "pointer",fontWeight:"bold",}}  >{nb.block}</a>
                  </p>
@@ -130,20 +157,30 @@ console.log(labels)
         <h5><b>{b.block}</b></h5>
         <Link to={{pathname:"/setSites/"+b.id,state: b}} style={{color:"white", background:"#333",
         borderRadius:"10px", padding:"10px 30px"}}>Assign Site</Link> 
-         <Button color="danger" onClick={toggle}>Update Block</Button></>: <p>Update data</p>}
+         <Button color="danger" onClick={toggle}>Update Block</Button></>: 
+         <>
+         <div style={{display:"flex"}}>
+          {filter && filter.map((f)=>(
+             <p style={{padding:20, cursor:"pointer"}} onClick={()=>filterChart(f)}>{f}</p>
+         ))}
+       
+         </div>
          <PolarArea data={data_} />
+         </>
+         }
+       
          </Col>
            <Col  xs="3">
            <br/>
            <h6>Site Summary</h6>
            {docs && docs.map((s)=>(
-               <>                                 
+               <div style={{borderBottom:"thin solid #999", marginBottom:20}}>                                 
                        <Row>
-                            <Col><p>{s.site_tag}{'\n'}{s.site_name}</p></Col>
-                            <Col><p>{s.site_value}</p></Col>
+                            <Col><p>{s.site_name}{'\n'}{s.site_tag}</p></Col>
+                            <Col><p style={{textAlign:"right"}}>{s.site_value}</p></Col>
                        </Row>
-                   <hr/>
-               </>
+                 
+               </div>
             
         ))}
            </Col>
