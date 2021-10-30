@@ -3,7 +3,7 @@ import firebase from '../../src/firebase'
 import {useHistory, Link} from 'react-router-dom' 
 import { Button, Modal, ModalHeader, ModalBody, Container, Row, Col, ModalFooter, Input } from 'reactstrap';
 import useGetBlocks from '../hooks/useGetBlocks';
-import { Bar, char } from "react-chartjs-2";
+import { PolarArea } from "react-chartjs-2";
 
 const ViewPrecinct = props => {
     let history = useHistory()
@@ -13,21 +13,35 @@ const ViewPrecinct = props => {
     const [block, setblock] = useState()
     const [b, setb] = useState([])
     const [docs, setdocs] = useState([])
+    const [labels, setlabels] = useState([])
+    const [_data, setdata_] = useState([])
 
     const toggle = () => setModal(!modal);
   
+console.log(labels)
+
+
+
 
     const data_ = {
-        labels: ["Organic", "Sponsored", "Organic", "Sponsored"],
-        previousDate: {
-          label: "08/10/2019 - 09/30/2019",
-          dataSet: [10000, 150000, 10000, 150000]
-        },
-        currentDate: {
-          label: "10/01/2019 - 11/20/2019",
-          dataSet: [10000, 225000, 10000, 225000]
-        }
+        labels:labels,
+        datasets: [
+          {
+            label: '# of Votes',
+            data: _data,
+            backgroundColor: [
+              'rgba(255, 99, 132, 0.5)',
+              'rgba(54, 162, 235, 0.5)',
+              'rgba(255, 206, 86, 0.5)',
+              'rgba(75, 192, 192, 0.5)',
+              'rgba(153, 102, 255, 0.5)',
+              'rgba(255, 159, 64, 0.5)',
+            ],
+            borderWidth: 1,
+          },
+        ],
       };
+
 
     const addblock = ()=>{
         firebase.firestore().collection('blocks').add(
@@ -43,9 +57,10 @@ const ViewPrecinct = props => {
     }
 
     const viewSiteInfo = (nb) =>{
+        let label = []
+        let data = []
         setb(nb)
-      //  alert(JSON.stringify(nb))
-        firebase.firestore().collection("sites").where("block_id","==", nb.id).get().then((doc)=>{
+         firebase.firestore().collection("sites").where("block_id","==", nb.id).get().then((doc)=>{
             const neighbourhood = [];
             doc.docs.forEach(document => {
               const nb = {
@@ -54,7 +69,19 @@ const ViewPrecinct = props => {
               }
               neighbourhood.push(nb)
             })
+
+            doc.docs.forEach(element => {
+                label.push(element.data().site_name)
+            });
+
+            doc.docs.forEach(element => {
+                data.push(element.data().site_value)
+            });
+            setdata_(data)            
+            setlabels(label)
             setdocs(neighbourhood)
+
+
         })
     }
     const externalCloseBtn = <button className="close" style={{ position: 'absolute', top: '15px', right: '15px' }} onClick={toggle}>&times;</button>;
@@ -104,84 +131,7 @@ const ViewPrecinct = props => {
         <Link to={{pathname:"/setSites/"+b.id,state: b}} style={{color:"white", background:"#333",
         borderRadius:"10px", padding:"10px 30px"}}>Assign Site</Link> 
          <Button color="danger" onClick={toggle}>Update Block</Button></>: <p>Update data</p>}
-         <Bar
-        pointStyle="star"
-        data={{
-          labels: data.labels,
-          responsive: true,
-          offset: true,
-          datasets: [
-            {
-              label: "Mobile",
-              pointStyle: "rectRounded",
-              backgroundColor: "#6ED3FF",
-              barThickness: 40,
-              categoryPercentage: 1,
-              data: data_.previousDate.dataSet //From API
-            },
-            {
-              label: "Desktop",
-              backgroundColor: "#1497FF",
-              barThickness: 40,
-              categoryPercentage: 1,
-              pointStyle: "triangle",
-              data: data_.currentDate.dataSet //From API
-            }
-          ]
-        }}
-        height={220}
-        options={{
-          offsetGridLines: true,
-          drawTicks: true,
-          layout: {
-            padding: {
-              top: 30,
-              right: 40,
-              bottom: 40
-            }
-          },
-          legend: {
-            display: true,
-            position: "right",
-            align: "start",
-            labels: {
-              usePointStyle: true
-            }
-          },
-          responsive: true,
-          maintainAspectRatio: false,
-          scales: {
-            xAxes: [
-              {
-                stacked: true,
-                ticks: {
-                  padding: 5
-                },
-                gridLines: {
-                  display: false
-                }
-              }
-            ],
-            yAxes: [
-              {
-                stacked: false,
-                gridLines: {
-                  drawBorder: false
-                },
-                ticks: {
-                  beginAtZero: true,
-                  maxTicksLimit: 6,
-                  padding: 20,
-                  callback(n) {
-                    if (n < 1e3) return n;
-                    if (n >= 1e3) return +(n / 1e3).toFixed(1) + "K";
-                  }
-                }
-              }
-            ]
-          }
-        }}
-      />
+         <PolarArea data={data_} />
          </Col>
            <Col  xs="3">
            <br/>
