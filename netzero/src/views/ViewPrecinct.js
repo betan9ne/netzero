@@ -103,12 +103,16 @@ const ViewPrecinct = props => {
     }
 
     const filterChart = (filter) =>{
-      let newData = docs
-        var filteredData =  newData.filter(function(tag) {
-            return tag.site_tag === filter;
+      let newData = []
+        var filteredData =  docs.filter(function(tag) {
+            if(tag.site_tag === filter)
+            {
+              newData.push(tag)
+            }
+            return newData
           });
-          getDataandLabels(filteredData)
-          setdocs(filteredData)
+          getDataandLabels(newData)
+        //  setdocs(newData)
         
     }
     const externalCloseBtn = <button className="close" style={{ position: 'absolute', top: '15px', right: '15px' }} onClick={toggle}>&times;</button>;
