@@ -78,7 +78,7 @@ function Neighbourhood() {
            </> : 
            <div style={{display:"flex", flexDirection: "column"}}>
            {neighbourhoods.map((nb)=>(
-               <p style={{marginBottom:40, background:"#fdb940", border:"2px solid #000000", borderColor: "black",textAlign: "center",  padding:15, width:200, borderRadius:15, fontSize:18, color:"black", marginBottom:30 }}>
+               <p style={{marginBottom:40, background: "#fdb940", border:"2px solid #000000", borderColor: "black",textAlign: "center",  padding:15, width:200, borderRadius:15, fontSize:18, color:"black", marginBottom:30 }}>
             <a style={{color:"black", cursor: "pointer",fontWeight:"bold",}} onClick={()=>getPrecincts(nb)}>{nb.neighbourhood}</a>
             </p>
            ))}

@@ -20,41 +20,41 @@ const SetSites = props => {
 
     const [Residential, setResidential] = useState(
         {
-            "Low_Density": null,
-            "Low_Density_Pool": null,
-            "Medium_Density" : null,
-            "High_Density": null
+            "Low_Density": 0,
+            "Low_Density_Pool": 0,
+            "Medium_Density" : 0,
+            "High_Density": 0
         })
       const [Warehouse, setWarehouse] = useState({
-            "Light_Industrial": null,
-            "Medium_industrial": null,
-            "High_Industrial": null
+            "Light_Industrial": 0,
+            "Medium_industrial": 0,
+            "High_Industrial": 0
       })
 
        const [infrastructure, setinfrastructure] = useState({
-           "Street_Lights": null,
-           "Traffic_Lights": null
+           "Street_Lights": 0,
+           "Traffic_Lights": 0
        })
 
        const [Transport, settransport] = useState({
-           "Small_Petrol":null,
-           "Small_Diesel": null,
-           "Medium_Petrol": null,
-           "Medium_Diesel": null,
-           "Large_Petrol": null,
-           "Large_Diesel": null
+           "Small_Petrol":0,
+           "Small_Diesel": 0,
+           "Medium_Petrol": 0,
+           "Medium_Diesel": 0,
+           "Large_Petrol": 0,
+           "Large_Diesel": 0
        })
 
        const [Commercial, setcommercial] = useState({
-           "Business_&_Commercial": null,
-           "Education": null,
-           "Residential" : null,
-           "Office": null,
-           "Religious": null,
-           "Government": null,
-           "Public_Open_Space": null,
-           "Vacant_Land": null,
-           "Public_Service_Infrastructure": null
+           "Business_&_Commercial": 0,
+           "Education": 0,
+           "Residential" : 0,
+           "Office": 0,
+           "Religious": 0,
+           "Government": 0,
+           "Public_Open_Space": 0,
+           "Vacant_Land": 0,
+           "Public_Service_Infrastructure": 0
        })
        let ResidentialArray = []
        let InfrastructureArray = []
@@ -351,7 +351,7 @@ const addSites = (site_data) =>{
             <Col  xs="4">Site Summary<br/>
                    
                 {residentailArray.map((rA)=>(
-                    rA.value=== null ? null : 
+                    rA.value=== 0 ? null : 
                     <Row>
                         <Col><b>{rA.site}</b></Col>
                         <Col><p style={{textAlign:"right"}}>{rA.value}</p></Col>
@@ -359,7 +359,7 @@ const addSites = (site_data) =>{
                     
                 ))}
                 {infrastructureArray.map((rA)=>(
-                    rA.value=== null ? null : 
+                    rA.value=== 0 ? null : 
                     <Row>
                         <Col><b>{rA.site}</b></Col>
                         <Col><p style={{textAlign:"right"}}>{rA.value}</p></Col>
@@ -368,7 +368,24 @@ const addSites = (site_data) =>{
                 ))}
 
                 {warehouseArray.map((rA)=>(
-                    rA.value=== null ? null : 
+                    rA.value=== 0 ? null : 
+                    <Row>
+                        <Col><b>{rA.site}</b></Col>
+                        <Col><p style={{textAlign:"right"}}>{rA.value}</p></Col>
+                    </Row>
+                    
+                ))}
+
+                {transportArray.map((rA)=>(
+                    rA.value=== 0 ? null : 
+                    <Row>
+                        <Col><b>{rA.site}</b></Col>
+                        <Col><p style={{textAlign:"right"}}>{rA.value}</p></Col>
+                    </Row>
+                    
+                ))}
+                {commericalArray.map((rA)=>(
+                    rA.value=== 0 ? null : 
                     <Row>
                         <Col><b>{rA.site}</b></Col>
                         <Col><p style={{textAlign:"right"}}>{rA.value}</p></Col>

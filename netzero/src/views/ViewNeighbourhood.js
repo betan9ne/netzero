@@ -12,10 +12,11 @@ const ViewNeighbourhood = props => {
     const [p, setp] = useState(null)
     const [docs, setdocs] = useState([])
     const toggle = () => setModal(!modal);
-  
+  let history = useHistory()
 
     const getBlocks = (p) =>{
         setp(p)
+        
         firebase.firestore().collection("blocks").where("precinct_id","==", p.id).onSnapshot((doc)=>{
             const neighbourhood = [];
             doc.docs.forEach(document => {
@@ -59,7 +60,7 @@ const ViewNeighbourhood = props => {
       <div style={{background:"#fdb940", padding:20}}>
                 <Row>
                     <Col><h1 style={{color:"white"}}>Precincts</h1>
-                    <h4>{data.neighbourhood}</h4>
+                    <h4 onClick={()=>history.goBack()}>{data.neighbourhood}</h4>
                     </Col>
                     <Col> <Button color="danger" onClick={toggle}>Create precinct</Button>
                     
@@ -73,7 +74,7 @@ const ViewNeighbourhood = props => {
                  <h3>List of Precincts</h3>
                   {precinct.length  === 0 ? <p>You have no precinct</p> : <>
                     {precinct.map((nb)=>(
-                        <p style={{marginBottom:40, background:"#fdb940", border:"2px solid #000000", borderColor: "black",textAlign: "center",  padding:15, width:200, borderRadius:15, fontSize:18, color:"black", marginBottom:30 }}>
+                        <p style={{marginBottom:40, background: "#fdb940", border:"2px solid #000000", borderColor: "black",textAlign: "center",  padding:15, width:200, borderRadius:15, fontSize:18, color:"black", marginBottom:30 }}>
         <a onClick={()=>getBlocks(nb)} style={{color:"black", cursor: "pointer",fontWeight:"bold",}} > {nb.precint}</a>
                  {/* <Link to={{pathname:"/viewPrecinct/"+nb.id,state: nb}}>{nb.precint}</Link> */}
                  </p>
