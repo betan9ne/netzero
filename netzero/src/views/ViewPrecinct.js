@@ -3,7 +3,8 @@ import firebase from '../../src/firebase'
 import {useHistory, Link} from 'react-router-dom' 
 import { Button, Modal, ModalHeader, ModalBody, Container, Row, Col, ModalFooter, Input } from 'reactstrap';
 import useGetBlocks from '../hooks/useGetBlocks';
-import { PolarArea } from "react-chartjs-2";
+import { Bar, Pie } from "react-chartjs-2";
+import { elementType } from 'prop-types';
 
 
 const ViewPrecinct = props => {
@@ -15,15 +16,19 @@ const ViewPrecinct = props => {
     const [b, setb] = useState([])
     const [docs, setdocs] = useState([])
     const [labels, setlabels] = useState([])
+    const [pie2labels, setpie2labels] = useState([])
     const [_data, setdata_] = useState([])
     const [filter, setfilter] = useState([])
+    const [selectedFilter, setselectedFilter] = useState()
+    let total = 0
+    const [_total, set_total] = useState(0)
     const toggle = () => setModal(!modal);
 
     const data_ = {
         labels:labels,
         datasets: [
           {
-            label: '# of Votes',
+            label: '',
             data: _data,
             backgroundColor: [
               'rgba(255, 99, 132, 0.5)',
@@ -38,6 +43,45 @@ const ViewPrecinct = props => {
         ],
       };
 
+      const pie2data_ = {
+        labels:pie2labels,
+        datasets: [
+          {
+            label: '',
+            data: _data,
+            backgroundColor: [
+              'rgba(255, 99, 132, 0.5)',
+              'rgba(54, 162, 235, 0.5)',
+              'rgba(255, 206, 86, 0.5)',
+              'rgba(75, 192, 192, 0.5)',
+              'rgba(153, 102, 255, 0.5)',
+              'rgba(255, 159, 64, 0.5)',
+            ],
+            borderWidth: 1,
+          },
+        ],
+      };
+
+      const options = {
+        indexAxis: 'y',
+        // Elements options apply to all of the options unless overridden in a dataset
+        // In this case, we are setting the border of each horizontal bar to be 2px wide
+        elements: {
+          bar: {
+            borderWidth: 2,
+          },
+        },
+        responsive: true,
+        plugins: {
+          legend: {
+            position: 'right',
+          },
+          title: {
+            display: false,
+            text: 'Chart.js Horizontal Bar Chart',
+          },
+        },
+      };
 
     const addblock = ()=>{
         firebase.firestore().collection('blocks').add(
@@ -53,7 +97,7 @@ const ViewPrecinct = props => {
     }
 
     const viewSiteInfo = (nb) =>{
-        
+        setselectedFilter("All Sites")
         let neighbourhood = [];
         let filter_ = []
         setb(nb)
@@ -67,15 +111,21 @@ const ViewPrecinct = props => {
               neighbourhood.push(nb)
             })
 
-            getDataandLabels(neighbourhood)
+             getDataandLabels(neighbourhood)
           
             setdocs(neighbourhood)
 
               let result
               let abc =  neighbourhood.reduce((r, e) =>{
-                let l = e.site_tag
-                if(!r[l])r[l] = {l, _tag:[e]}
-                else r[l]._tag.push(e)
+                 let l = e.model
+                if(!r[l])
+                {
+                  r[l] = {l, _tag:[e]}
+                }
+                else
+                {
+                  r[l]._tag.push(e)
+                } 
                 return r
               }, {}) 
                result = Object.values(abc)
@@ -83,6 +133,7 @@ const ViewPrecinct = props => {
                  filter_.push(c.l)     
                  
               ))
+              console.log(abc)
               setfilter(filter_)
                     })
     }
@@ -91,20 +142,28 @@ const ViewPrecinct = props => {
         let label = []
         let data = []
         _data.forEach(element => {
-        //    console.log(element)
-            label.push(element.site_name)
+             label.push(element.model)
         });
 
         _data.forEach(element => {
-            data.push(element.site_value)
+            data.push(element.total)
         });
+total = 0
+        _data.forEach(element => {
+             total += element.total
+        
+      });
+
+     console.log(total)
+      set_total(total)
         setdata_(data)            
         setlabels(label)
     }
 
     const filterChart = (filter) =>{
+      setselectedFilter(filter)
       let newData = []
-        var filteredData =  docs.filter(function(tag) {
+         docs.filter(function(tag) {
             if(tag.site_tag === filter)
             {
               newData.push(tag)
@@ -134,15 +193,15 @@ const ViewPrecinct = props => {
       <div style={{background:"#fdb940", padding:20}}>
                 <Row>
                     <Col><h1 style={{color:"white"}}>Blocks</h1>
-                    <h4 onClick={()=>history.goBack()}>{data.precint}</h4></Col>
+                    <h4 onClick={()=>history.goBack()} style={{cursor:"pointer"}}>{data.precint}</h4></Col>
                     <Col>  <Button color="danger" onClick={toggle}>Create Block</Button>
                  </Col>
                     </Row>           
             </div>
             
-   <Container>
+   <Container  style={{maxWidth:"100%"}}>
        <Row>
-       <Col xs="3" style={{padding:"20px"}}><h3>Blocks</h3><br/>
+       <Col xs="2" style={{padding:"20px"}}><h5>Blocks</h5><br/>
        {blocks.length  === 0 ? <><p>You have no blocks</p>     
                 </> : 
                 <>
@@ -155,37 +214,46 @@ const ViewPrecinct = props => {
                 </>
                 }
        </Col>
-         <Col xs="6" style={{padding:"40px"}}>
+         <Col xs="8" style={{padding:"40px"}}>
         {b.id === undefined ? null : docs.length === 0 ? 
-        <>
-        <h5><b>{b.block}</b></h5>
+        <div>
+        {/* <h5><b>{b.block}</b></h5>
         <Link to={{pathname:"/setSites/"+b.id,state: b}} style={{color:"white", background:"#333",
         borderRadius:"10px", padding:"10px 30px"}}>Assign Site</Link> 
-         <Button color="danger" onClick={toggle}>Update Block</Button></>: 
+         <Button color="danger" onClick={toggle}>Update Block</Button></>:  */}
+         </div> :
          <>
-         <div style={{display:"flex"}}>
-          {filter && filter.map((f)=>(
-             <p style={{padding:20, cursor:"pointer"}} onClick={()=>filterChart(f)}>{f}</p>
-         ))}
+    
+         <Container>
+           <Row>
+          
+             <Col>
+             <Pie data={data_}   />
+             <br/>
+             <Bar data= {data_} options={options}/>
+              </Col>
+           </Row>
+         </Container>
        
-         </div>
-         <PolarArea data={data_} />
          </>
          }
        
          </Col>
-           <Col  xs="3">
+           <Col  xs="2">
            <br/>
-           <h6>Site Summary</h6>
+           <h5>Site Summary</h5>
+           {_total}
+           <Button color="warning">
+                 <Link to={{pathname:"/setSites/"+b.id,state: b}} 
+                  style={{color:'white', textDecoration:"none"}}>Update Sites</Link>
+             </Button><br/> <br/>
            {docs && docs.map((s)=>(
                <div style={{borderBottom:"thin solid #999", marginBottom:20}}>                                 
                        <Row>
-                            <Col><p>{s.site_name}{'\n'}{s.site_tag}</p></Col>
-                            <Col><p style={{textAlign:"right"}}>{s.site_value}</p></Col>
-                       </Row>
-                 
-               </div>
-            
+                            <Col><p>{s.site_name}{'\n'}{s.model}</p></Col>
+                            <Col><p style={{textAlign:"right"}}>{_total && parseInt(s.total/_total*100)}%</p></Col>
+                       </Row>                
+               </div>            
         ))}
            </Col>
        </Row>

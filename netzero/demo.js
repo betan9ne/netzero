@@ -28,7 +28,14 @@
 <p onClick={()=>setSiteInfo("Medium industrial","Warehouse")}>Medium industrial</p>
 <p onClick={()=>setSiteInfo("High industrial","Warehouse")}>High industrial</p>
 
-
+        <br/><br/>
+             <div style={{display:"flex", flexWrap:"wrap"}}>
+          {filter && filter.map((f)=>(
+             <p style={{padding:10, cursor:"pointer", border:"thin solid #888888", borderRadius:8, marginRight:10}} onClick={()=>filterChart(f)}>{f}</p>
+         ))}
+         <p style={{padding:10, cursor:"pointer", border:"thin solid #888888", borderRadius:8, marginRight:10}} onClick={()=>filterChart("")}>Clear</p>
+         </div>
+         <p>Showing results for  : <b>{selectedFilter && selectedFilter}</b></p>
   // for (const key in Residential) {
         //     if (Residential.hasOwnProperty(key)) {
 

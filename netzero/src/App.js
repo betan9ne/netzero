@@ -9,6 +9,9 @@ import ViewBlock from "./views/ViewBlock";
 import ViewNeighbourhood from "./views/ViewNeighbourhood";
 import ViewPrecinct from "./views/ViewPrecinct";
 import firebase from './firebase'
+import UpdateSites from "./views/UpdateSites";
+import AddSites from "./views/AddSites";
+import Manage from "./views/Manage";
 function App() {
 
 const [state, setstate] = useState(false)  
@@ -16,8 +19,7 @@ const [state, setstate] = useState(false)
 useEffect(() => {
   firebase.auth().onAuthStateChanged((user)=>{
     if(user){
-      setstate(true)
-      
+      setstate(true)      
     }
     
       })
@@ -33,8 +35,10 @@ useEffect(() => {
             <Route path="/viewNeighbourhood/:id" component={ViewNeighbourhood}></Route>
             <Route path="/CreateUser"><CreateUser/></Route>
             <Route path="/viewPrecinct/:id" component={ViewPrecinct}></Route>
-            <Route path="/setSites/:id" component={SetSites}></Route>
+            <Route path="/setSites/:id" component={AddSites}></Route>
+            <Route path="/manage" component={Manage}></Route>
             <Route path="/viewBlock/:id" component={ViewBlock}></Route>
+            <Route path="/updateSites/:id" component={UpdateSites}></Route>
             <Route path="/"><Neighbourhood/></Route>                   
             </Switch>
             </div>
