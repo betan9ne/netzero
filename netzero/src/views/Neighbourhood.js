@@ -2,8 +2,9 @@ import React,{useEffect, useState} from 'react'
 import firebase from '../../src/firebase'
 import {useHistory, Link} from 'react-router-dom'
 import useGetNeighbourhood from '../hooks/useGetNeighbourhood'
-import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Col, Row, Input, Container } from 'reactstrap';
+import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Col, Row, Input, Container, ButtonGroup } from 'reactstrap';
 import {PolarArea} from 'react-chartjs-2'
+import { FiLogOut, FiUser, FiUsers } from "react-icons/fi";
 
 function Neighbourhood() {
 
@@ -90,20 +91,7 @@ function Neighbourhood() {
         setlabels(label)
     }
 
-    const filterChart = (filter) =>{
-      setselectedFilter(filter)
-      let newData = []
-         docs.filter(function(tag) {
-            if(tag.site_tag === filter)
-            {
-              newData.push(tag)
-            }
-            return newData
-          });
-          getDataandLabels(newData)
-        //  setdocs(newData)
-        
-        }
+
 
     const data_ = {
         labels:labels,
@@ -172,8 +160,9 @@ function Neighbourhood() {
 
                     <Col style={{display:'flex', justifyContent:'flex-end'}}>                     
                     <Button color="info" onClick={toggle}>Create neighbourhood</Button>
-                    <Button color="warning"  style={{marginLeft:20 }}onClick={()=>history.push("CreateUser")}>Manage Users</Button>
-                    <Button color="danger"  style={{marginLeft:20 }}onClick={()=>logout()}>Logout</Button>
+                   
+                    <Button color="warning"  style={{marginLeft:20 }}onClick={()=>history.push("CreateUser")}> <FiUsers size={30} color="white"/></Button>
+                    <Button color="warning"  style={{marginLeft:20 }}onClick={()=>logout()}><FiLogOut  size={30} color="white"/></Button>
                     
                     </Col>
                     </Row>           
@@ -181,38 +170,39 @@ function Neighbourhood() {
             
 <Container style={{maxWidth:"100%"}}>
     <Row>
-        <Col xs="2" style={{padding:"20px"}}> <h5>List of neighbourhoods</h5><br/>
+        <Col xs="2" style={{padding:"20px"}}> <h6>List of neighbourhoods</h6><br/>
            
            {neighbourhoods.length  === 0 ? <><p>You have no neighbourhoods</p>     
            </> : 
            <div style={{display:"flex", flexDirection: "column"}}>
            {neighbourhoods.map((nb)=>(
-               <p style={{marginBottom:40, background: "#fdb940", border:"2px solid #000000", borderColor: "black",textAlign: "center",  padding:15, width:200, borderRadius:15, fontSize:18, color:"black", marginBottom:30 }}>
-            <h6 style={{color:"black", cursor: "pointer",fontWeight:"bold",}} onClick={()=>getPrecincts(nb)}>{nb.neighbourhood}</h6>
+               <p onClick={()=>getPrecincts(nb)} style={{background:nb.id === b.id ? "#fdb940" : "#ffffff", 
+                    border:"1px solid #000000", borderColor: "black",textAlign: "center",  padding:10, 
+                     borderRadius:10, fontSize:16, color:nb.id === b.id ? "white":"black", cursor: "pointer",fontWeight:"bold",
+                      marginBottom:30 }}>
+           {nb.neighbourhood}
             </p>
            ))}
            </div>
            }</Col>
-        <Col xs="8" style={{padding:"40px"}}>
-        {id && <Link to={{pathname:"/viewNeighbourhood/"+id.id,state: id}} style={{color:"white", background:"#333",
-        borderRadius:"10px", padding:"10px 30px"}}>View Precincts ({docs.length})</Link>}
-
-<Row style={{border:"thin solid #e1e1e1", borderRadius:15}}>
-    <Col xs="3">
-      {/* <p>{JSON.stringify(docsData)}</p> */}
-    </Col>
-    <Col xs="9" ><PolarArea data={data_}  width={50}
-	height={50}
-	options={{ maintainAspectRatio: true }} />
-</Col>
-</Row>
-
-
+        <Col style={{padding:"40px"}}>
+        {id && 
+        <>
+        <ButtonGroup>
+          <Button color="warning"><Link to={{pathname:"/viewNeighbourhood/"+id.id,state: id}} style={{color:"white", textDecoration:"none"}}>View Precincts</Link></Button>
+        <Button>Update Neighbourhood</Button>
+        </ButtonGroup>
+        
+        </>
+        }
+ 
         </Col>
-        <Col xs="2">
+        <Col xs="2" style={{padding:"20px"}}>
+        <h6>Precints</h6>
        <br/>
         {docs && docs.map((p)=>(
-            <p>{p.precint}</p>
+            <p style={{ border:"1px solid #000000", borderColor: "black",textAlign: "center",  padding:10, 
+                     borderRadius:10,}}>{p.precint}</p>
         ))}
         </Col>
 

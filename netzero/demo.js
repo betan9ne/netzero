@@ -49,3 +49,73 @@
             <Input type="number" required value={siteValue} onChange={e =>setsiteValue(e.target.value)} placeholder="site value" /><br/>
             <Button color="primary" onClick={()=>updateObject(site)}>Confirm</Button>
             </Col> */}
+
+            const filterChart = (filter) =>{
+               setselectedFilter(filter)
+               let newData = []
+                  docs.filter(function(tag) {
+                     if(tag.site_tag === filter)
+                     {
+                       newData.push(tag)
+                     }
+                     return newData
+                   });
+                   getDataandLabels(newData)
+                 //  setdocs(newData)
+                 
+             }
+
+             const filterChart = (filter) =>{
+              setselectedFilter(filter)
+              let newData = []
+                 docs.filter(function(tag) {
+                    if(tag.site_tag === filter)
+                    {
+                      newData.push(tag)
+                    }
+                    return newData
+                  });
+                  getDataandLabels(newData)
+                //  setdocs(newData)
+                
+            }
+              
+               {/* <h5><b>{b.block}</b></h5>
+        <Link to={{pathname:"/setSites/"+b.id,state: b}} style={{color:"white", background:"#333",
+        borderRadius:"10px", padding:"10px 30px"}}>Assign Site</Link> 
+         <Button color="danger" onClick={toggle}>Update Block</Button></>:  */}
+
+            let result
+            let abc =  neighbourhood.reduce((r, e) =>{
+               let l = e.model
+              if(!r[l])
+              {
+                r[l] = {l, _tag:[e]}
+              }
+              else
+              {
+                r[l]._tag.push(e)
+              } 
+              return r
+            }, {}) 
+             result = Object.values(abc)
+                 result.map(c =>(
+               filter_.push(c.l)     
+               
+            ))
+             setfilter(filter_)
+
+             const filterChart = (filter) =>{
+              setselectedFilter(filter)
+              let newData = []
+                 docs.filter(function(tag) {
+                    if(tag.site_tag === filter)
+                    {
+                      newData.push(tag)
+                    }
+                    return newData
+                  });
+                  getDataandLabels(newData)
+                //  setdocs(newData)
+                
+                }

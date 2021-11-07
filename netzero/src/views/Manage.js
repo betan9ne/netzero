@@ -11,7 +11,7 @@ function Manage() {
     const [factorInput, setfactorInput] = useState("")
 
     useEffect(() => {
-        firebase.firestore().collection("models").onSnapshot((doc)=>{
+        firebase.firestore().collection("models").where("tag","==", "Transport").onSnapshot((doc)=>{
             const users = [];
             doc.docs.forEach(document => {
               const nb = {
@@ -35,9 +35,10 @@ function Manage() {
     }
 
     const addFactors = () =>{
-        firebase.firestore().collection("models").doc(selectedModel.id).update({hours:factorInput}).then(()=>{
+        
+        firebase.firestore().collection("models").doc(selectedModel.id).update({gas_cooking: parseInt( factorInput)}).then(()=>{
             setmodelInput("")
-            alert("factor added Successfully")
+          //  alert("factor added Successfully")
           
         }).catch((e)=>{
             alert(e)
@@ -47,8 +48,9 @@ function Manage() {
 
     return (
         <div>
-            <h4>Admin</h4>
+         
             <Container style={{maxWidth:"100%"}}>
+            <h4>Admin</h4>
                 <Row>
                     <Col xs="3">
                         <h6>Add Model Inputs</h6>
@@ -58,7 +60,7 @@ function Manage() {
                     </Col>
                     <Col xs="3">
                         {docs && docs.map((d)=>(
-                            <p onClick={()=>setselectedModel(d)}>{d.model} - {d.emissions}<br/>{d.id}</p>
+                            <p onClick={()=>setselectedModel(d)}><b>{d.model}</b> - {d.gas_cooking}<br/>{d.id}</p>
                         ))}
                     </Col>
                     <Col xs="3">

@@ -13,8 +13,10 @@ const  AddSites = props => {
     const [scopeValue, setscopeValue] = useState("")
     const [modelInput1, setmodelInput1] = useState("")
     const [modelINput2, setmodelINput2] = useState("")
-    useEffect(() => {
-        firebase.firestore().collection("models").get().then((doc)=>{
+    const [category, setcategory] = useState("")
+   
+    const getModels  = (cat) =>{
+        firebase.firestore().collection("models").where("tag","==", cat).get().then((doc)=>{
             const users = [];
             doc.docs.forEach(document => {
               const nb = {
@@ -25,21 +27,37 @@ const  AddSites = props => {
             })
             setdocs(users)
         })
-    }, [])
+    }
+      
+    
+
+    function handleChange (event){
+        getModels(event.target.value)
+        setcategory(event.target.value)
+    }
 
     const calculate  =() =>{
-         //transport object
-        // let asd = {
-        //     precinct_id: data.precinct_id,
-        //     neighbourhood_id: data.neighbourhood_id,
-        //     block_id: data.id,
-        //     model:model.model,
-        //     model_tag: model.tag,
-        //     modeInput: modelInput1,
-        //     scopeValue : scopeValue,
-        //     total: scopeValue * modelInput1 * model.emissions
-        // }
-        //end of transport object
+        let electricity = 1.1
+        let gas = 0.2
+        if(category === "Transport")
+                {
+            //transport object
+            let asd = {
+                precinct_id: data.precinct_id,
+                neighbourhood_id: data.neighbourhood_id,
+                block_id: data.id,
+                model:model.model,
+                model_tag: model.tag,
+                modeInput: modelInput1,
+                scopeValue : scopeValue,
+                total: scopeValue * modelInput1 * model.emissions
+            }
+            //end of transport object
+            sendToDB(asd)
+            return
+        }
+        else if(category === "Infrastructure")
+        {
 
         //infrastructure object
         let asd = {
@@ -52,12 +70,49 @@ const  AddSites = props => {
             total: scopeValue * model.watts * model.hours
         }
         //end of infrastrucure object
+        sendToDB(asd)
+        return
+        }
+        else if(category=== "Buildings")
+        {
+  //buildings object
+  let f1 = (parseInt(scopeValue) * parseInt(model.electricity) * electricity)
+  let f2 = (parseInt(scopeValue) * parseInt(model.gas) * gas)
+  let asd = {
+      precinct_id: data.precinct_id,
+      neighbourhood_id: data.neighbourhood_id,
+      block_id: data.id,
+      model:model.model,
+      model_tag: model.tag,
+      scopeValue : scopeValue,
+      total_carbon_emissions_electricity : parseInt(scopeValue) * parseInt(model.electricity) * electricity,
+      lighting :f1 * model.lighting /100,
+      lighting_external : f1*model.lighting_external/100,
+      appliances : f1*model.appliances/100,
+      space_heating : f1*model.space_heating/100,
+      cooling : f1*model.cooling/100,
+      water_heating: f1*model.water_heating/100,
+      pool_pump: f1*model.pool_pump/100,
+      cooking: f1*model.cooking/100,
+      gas_water_heating: f2*model.gas_water_heating/100,
+      gas_cooking: f2*model.gas_cooking/100,
+      total_carbon_emissions_gas : parseInt(scopeValue) * parseInt(model.gas) * gas,
 
+     
+  }
+  //end of buildings
+  sendToDB(asd)
+  return
+        }    
+    
+    }
+
+    const sendToDB = (object) =>{
         firebase.firestore().collection("sites").where("block_id","==",data.id).where("model","==",model.model).get().then((doc)=>{
             if(doc.docs.length === 1)
             {
                 console.log(doc.docs[0].id)
-               firebase.firestore().collection("sites").doc(doc.docs[0].id).update(asd).then(()=>{
+               firebase.firestore().collection("sites").doc(doc.docs[0].id).update(object).then(()=>{
                    alert("Scope updated")
                }).catch((e)=>{
                    alert(e)
@@ -65,20 +120,14 @@ const  AddSites = props => {
                return
             }
             else{
-                firebase.firestore().collection("sites").add(asd).then((doc)=>{
+                firebase.firestore().collection("sites").add(object).then((doc)=>{
                     alert("scope added")
                 }).catch((e)=>{
                     alert(e)
                 })
             }
             
-        })
-
-
-        
-
-    
-
+        }) 
     }
 
     return (
@@ -93,36 +142,65 @@ const  AddSites = props => {
             </div>
             <Container style={{maxWidth:"100%"}}>
                 <Row>
+                <Col xs="2">
+                <br/>
+                <h6>Select a scope</h6>
+                <br/>
+                <Input
+        id="exampleSelect"
+        name="select"
+        type="select"
+        value={category} onChange={handleChange}
+      >
+         <option value={""}>Select a category</option>
+                        <option value="Transport">Transport</option>
+                        <option value="Infrastructure">Infrastructure</option>
+                        <option value="Buildings">Buildings</option>
+      </Input>
+                          
+                </Col>
                     <Col xs="3">
+                   
                     <br/>
-                    
-                    
+                    <h6>{category}</h6>
+                    <br/>
                 {docs && docs.map((d)=>(
-                    <p onClick={()=>setmodel(d)} key={d.id} value={d.model}>{d.model}</p>
-                )
+                    <>
+                    <p onClick={()=>setmodel(d)} style={{cursor:"pointer"}} key={d.id} value={d.model}>{d.model}</p>
+                    <hr/>
+                    </>
+                    )
                 )}
             <br/><br/>
             
                     </Col>
-                    <Col xs="4"> <p>{model.model}</p>
-                    {model.tag === "Transport" ? <div>
-                    <Input type="text" required onChange={(e) => setscopeValue(e.target.value)} placeholder="Enter scope value here" />
-           <br/> <Input type="text" required onChange={(e) => setmodelInput1(e.target.value)} placeholder="Enter model input 1" />
-            <p>{model.emissions}</p>
-            <Button color="primary" onClick={()=>calculate()} >Calculate</Button>
-                    </div> : <>            
-                     <br/>          
+                    <Col xs="2"><br/> <h6>{model.model}</h6><br/>
+                    {model.tag === "Transport" ? <>
+                    <Input type="text" required onChange={(e) => setscopeValue(e.target.value)} placeholder="Enter number of cars" />
+           <br/> <Input type="text" required onChange={(e) => setmodelInput1(e.target.value)} placeholder="Enter number of Kms annually" />
+           <br/>
+                      </> : <>            
+                            
             </>
             }
 
-            {model.tag === "Infrastructure" ? <div>
-                    <Input type="text" required onChange={(e) => setscopeValue(e.target.value)} placeholder="Enter scope value here" />
-              <p>{model.watts} - {model.hours}</p>
-            <Button color="primary" onClick={()=>calculate()} >Calculate</Button>
-                    </div> : <>            
-                     <br/>          
+            {model.tag === "Infrastructure" ? <>
+                    <Input type="text" required onChange={(e) => setscopeValue(e.target.value)} placeholder="Enter number of street lights" />
+              <br/>
+                      </> : <>            
+                             
             </>
             }
+
+            {model.tag === "Buildings" ? <>
+                    <Input type="text" required onChange={(e) => setscopeValue(e.target.value)} placeholder="Enter area" />
+          <br/>
+                   </> : <>            
+                             
+            </>
+            }
+          {scopeValue.length === 0 ? null  : <Button color="warning" style={{color:"white"}} onClick={()=>calculate()} >Calculate and Send</Button>}
+            
                     </Col>
                     <Col xs="4"></Col>
                 </Row>
