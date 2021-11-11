@@ -12,6 +12,7 @@ import firebase from './firebase'
 import UpdateSites from "./views/UpdateSites";
 import AddSites from "./views/AddSites";
 import Manage from "./views/Manage";
+import AddNewSites from "./views/AddNewSites";
 function App() {
 
 const [state, setstate] = useState(false)  
@@ -35,7 +36,7 @@ useEffect(() => {
             <Route path="/viewNeighbourhood/:id" component={ViewNeighbourhood}></Route>
             <Route path="/CreateUser"><CreateUser/></Route>
             <Route path="/viewPrecinct/:id" component={ViewPrecinct}></Route>
-            <Route path="/setSites/:id" component={AddSites}></Route>
+            <Route path="/setSites/:id" component={AddNewSites}></Route>
             <Route path="/manage" component={Manage}></Route>
             <Route path="/viewBlock/:id" component={ViewBlock}></Route>
             <Route path="/updateSites/:id" component={UpdateSites}></Route>

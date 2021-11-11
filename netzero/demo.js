@@ -119,3 +119,37 @@
                 //  setdocs(newData)
                 
                 }
+
+                asd.map((a)=>(
+                  console.log(a)
+                ))
+               
+        
+                let asd = Object.keys(buildings)
+                asd.forEach(element => {
+                 console.log(element)
+                });
+              
+        
+                      let result
+                      let abc =  buildings.reduce((r, e) =>{
+                        let l = e.model
+                        if(!r[l])r[l] = {l, _tag:[e]}
+                        else r[l]._tag.push(e)
+                        return r
+                      }, {}) 
+                       result = Object.values(abc)
+                           result.map(c =>(
+                         buildings.push(c.l)   
+                      ))
+                     setbuildingsData(buildings).
+
+                        // _data.forEach(element => {
+        //     console.log(Object.keys(element))
+        //    // label.push(element.model)
+        // });
+
+      //   _data.forEach(element => {
+      //       data.push(element.scopeValue)
+      //   });
+      //  console.log(data)

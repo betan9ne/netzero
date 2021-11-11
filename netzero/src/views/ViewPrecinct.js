@@ -18,18 +18,57 @@ const ViewPrecinct = props => {
     const [b, setb] = useState([])
     const [docs, setdocs] = useState([])
     const [labels, setlabels] = useState([])
-    const [pie2labels, setpie2labels] = useState([])
     const [_data, setdata_] = useState([])
     const [buildingData, setbuildingData] = useState([])
     const [buildingLabels, setbuildingLabels] = useState([])
-    const [infrastructureData, setinfrastructureData] = useState([])
+    
     const [buildingValue, setbuildingValue] = useState([])
     const [pie2data, setpie2data] = useState([])
     const [filter, setfilter] = useState([])
-    const [selectedFilter, setselectedFilter] = useState()
+    
     let total = 0
     const [_total, set_total] = useState(0)
     const toggle = () => setModal(!modal);
+
+    const gasData = {
+      labels: docs.map((a)=>(
+        a.model
+      )),
+      datasets: [
+        {
+          label: 'Water Heating (Gas)',
+          data: docs.map((a)=>(
+            a.gas_water_heating
+          )),
+          backgroundColor: 'rgba(255, 99, 132, 0.2)',
+          borderWidth: 2,
+        },
+        {
+          label: 'Cooking (Gas)',
+          data: docs.map((a)=>(
+            a.gas_cooking
+          )),
+          backgroundColor: 'rgba(54, 162, 235, 0.2)',
+          borderWidth: 2,
+        },
+        
+       ],
+       
+    };
+    
+    const gasoptions = {
+      scales: {
+        y: {
+          stacked: true,
+          ticks: {
+            beginAtZero: true
+          }
+        },
+        x: {
+          stacked: true
+        }
+      }
+    };
 
     const data_ = {
         labels:labels,
@@ -171,6 +210,7 @@ const ViewPrecinct = props => {
               transport.push(nb)
             })
               setdocs(transport)
+             console.log(transport)
              getDataandLabels(transport)
              getBuildingsData(transport)
      
@@ -377,32 +417,32 @@ const ViewPrecinct = props => {
          <>
          <div style={{display:"flex", marginBottom:20, justifyContent:"center"}}>
          <ButtonGroup>
-         <Button color="warning" style={{color:"white"}} onClick={()=>viewSiteInfo("Buildings")}>Buildings Emmissions</Button>
-         <Button color="warning" style={{color:"white"}}  onClick={()=>viewSiteInfo("Transport")}>Transport Emmissions</Button>
-         <Button  color="warning" style={{color:"white"}}  onClick={()=>viewSiteInfo("Infrastructure")}>Infrastructure Emmissions</Button>
-         </ButtonGroup>
+         <Button color="warning" style={{color:"white"}} onClick={()=>viewSiteInfo("Buildings")}>Buildings Emissions</Button>
+         <Button color="warning" style={{color:"white"}}  onClick={()=>viewSiteInfo("Transport")}>Transport Emissions</Button>
+         <Button  color="warning" style={{color:"white"}}  onClick={()=>viewSiteInfo("Infrastructure")}>Infrastructure Emissions</Button>
+          </ButtonGroup>
          </div>
          <Row>
             {filter === "Transport" ?<Col xs="6"><Pie data={data_}   /> </Col> : ""}
           {filter === "Transport" ?  <Col xs="6"> <Bar data= {data_} options={options}/></Col> : null}
+          
          </Row>
          <Row>
            
            {filter === "Transport" ? <Col xs="6"> <Pie data={pie2data_} /> </Col>: null}
            {filter === "Buildings" ? <>
            <Col xs="6"> <Doughnut data={_buildingdata} /><br/>
-                <Bar data={_buildingdata} /> </Col></>: null}
+                <Bar data={_buildingdata} />
+                <br/>
+                <h6>Water Heating and  Cooking</h6>
+                <Bar data={gasData} options={gasoptions} />
+                 </Col></>: null}
          </Row> 
          <Row>
-            {filter === "Infrastructure" ? <Col xs="6"><Pie data={_infrastructureData} /></Col> : null}
-           
+            {filter === "Infrastructure" ? <Col xs="6"><Pie data={_infrastructureData} /></Col> : null}           
          </Row>
-             
-             
-         
          </>
-         }
-       
+         }       
          </Col>
            <Col  xs="2">
            <br/>

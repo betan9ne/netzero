@@ -285,12 +285,24 @@ const getData = (_data) =>{
         {p ? <>
 <Row>
   <Col xs="6"> <Doughnut data={scopeData} /></Col>
-  <Col xs="6"> <Bar data={scopeData} /></Col>
+  <Col xs="6">{graphSummaries.map((a)=>(
+    <>
+    <b>{a.label}</b>
+    <p>{a.data}</p>
+    </>
+  ))} </Col>
 </Row>
 <br/>
 <Row>
   <Col xs="6"> <Doughnut data={data_} /></Col>
-  <Col xs="6"> <Bar data={data_} /></Col>
+  <Col xs="6">
+    {baselineEmissions.map((a)=>(
+      <>
+      <b>{a.label}</b>
+      <p>{a.data}</p>
+      </>
+    ))}
+  </Col>
 </Row></>
    : null }
     <br/>

@@ -108,11 +108,11 @@ const  AddSites = props => {
     }
 
     const sendToDB = (object) =>{
-        firebase.firestore().collection("sites").where("block_id","==",data.id).where("model","==",model.model).get().then((doc)=>{
+        firebase.firestore().collection("sites_test").where("block_id","==",data.id).where("model","==",model.model).get().then((doc)=>{
             if(doc.docs.length === 1)
             {
                 console.log(doc.docs[0].id)
-               firebase.firestore().collection("sites").doc(doc.docs[0].id).update(object).then(()=>{
+               firebase.firestore().collection("sites_test").doc(doc.docs[0].id).update(object).then(()=>{
                    alert("Scope updated")
                }).catch((e)=>{
                    alert(e)

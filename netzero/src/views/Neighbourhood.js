@@ -3,7 +3,7 @@ import firebase from '../../src/firebase'
 import {useHistory, Link} from 'react-router-dom'
 import useGetNeighbourhood from '../hooks/useGetNeighbourhood'
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Col, Row, Input, Container, ButtonGroup } from 'reactstrap';
-import {PolarArea} from 'react-chartjs-2'
+import { Doughnut, Bar } from "react-chartjs-2";
 import { FiLogOut, FiUser, FiUsers } from "react-icons/fi";
 
 function Neighbourhood() {
@@ -14,11 +14,10 @@ function Neighbourhood() {
     const [docs, setdocs] = useState([])
     const [labels, setlabels] = useState([])
     const [modal, setModal] = useState(false);
-    const [docsData, setDataDocs] = useState([])    
+ const [buildingsData, setbuildingsData] = useState([])   
     const [id, setid] = useState(null)
     const [_data, setdata_] = useState([])
-    const [filter, setfilter] = useState([])
-    const [selectedFilter, setselectedFilter] = useState()
+
     const [b, setb] = useState([])
 
     const logout = ()=>{
@@ -29,11 +28,9 @@ function Neighbourhood() {
           });
     }
 
-    const viewSiteInfo = (nb) =>{
-
-        setselectedFilter("All Sites")
-        let neighbourhood = [];
-        let filter_ = []
+    const viewSiteInfo = (nb, tag) =>{
+     let neighbourhood = [];
+        let buildings = []
         setb(nb)
          firebase.firestore().collection("sites").where("neighbourhood_id","==", nb.id).get().then((doc)=>{
         
@@ -44,60 +41,52 @@ function Neighbourhood() {
               }
               neighbourhood.push(nb)
             })
-              getDataandLabels(neighbourhood)
-           // funnyfunction(neighbourhood)
            
-           let group = neighbourhood.reduce((r, a) => {
-            r[a.site_name] = [...r[a.site_name] || [], a];
+            //get buildings data
+            neighbourhood.filter((val)=>{
+              if(val.model_tag === tag)
+              {
+                buildings.push(val)
+              }
+            })
+            
+           let group = buildings.reduce((r, a) => {
+            r[a.model] = [...r[a.model] || [], a];
          return r;
-        }, {});
-      
-        let sdf = []
-        let asd = Object.keys(group)
-        asd.forEach(element => {
-          console.log(element)
-        });
-        setDataDocs(asd)
+        }, {});           
+        
+      let asd = Object.entries(group)
 
-              let result
-              let abc =  neighbourhood.reduce((r, e) =>{
-                let l = e.site_tag
-                if(!r[l])r[l] = {l, _tag:[e]}
-                else r[l]._tag.push(e)
-                return r
-              }, {}) 
-               result = Object.values(abc)
-                   result.map(c =>(
-                 filter_.push(c.l)     
-                 
-              ))
-              setfilter(filter_)
+           getDataandLabels(asd)
+     //       console.log(result)
+        //       setfilter(filter_)
                     })
     }
  
-
+  
     const getDataandLabels = (_data) =>{
         let label = []
         let data = []
-        _data.forEach(element => {
-        //    console.log(element)
-            label.push(element.site_name)
-        });
-
-        _data.forEach(element => {
-            data.push(element.site_value)
-        });
+        
+        _data.forEach(e=>{
+          label.push(e[0])
+           
+          let asd = e[1].reduce( function(a, b){
+            return a + parseInt(b['scopeValue']);
+        }, 0);
+        data.push(asd) 
+        })
+     
         setdata_(data)            
         setlabels(label)
     }
 
-
-
+    
     const data_ = {
         labels:labels,
         datasets: [
           {
-            label: '# of Votes',
+            label: '',
             data: _data,
             backgroundColor: [
               'rgba(255, 99, 132, 0.5)',
@@ -112,9 +101,28 @@ function Neighbourhood() {
         ],
       };
 
+      const options = {
+        indexAxis: 'y',
+             elements: {
+          bar: {
+            borderWidth: 2,
+          },
+        },
+        responsive: true,
+        plugins: {
+          legend: {
+            position: 'right',
+          },
+          title: {
+            display: false,
+            text: '',
+          },
+        },
+      };
+
     const getPrecincts = (n) =>{
         setid(n)
-        viewSiteInfo(n)
+        viewSiteInfo(n, "Buildings")
         firebase.firestore().collection("precinct").where("neighbourhood_id","==", n.id).onSnapshot((doc)=>{
             const neighbourhood = [];
             doc.docs.forEach(document => {
@@ -136,9 +144,7 @@ function Neighbourhood() {
         })
     }
 
-    console.log(docsData)
-
-    const toggle = () => setModal(!modal);
+      const toggle = () => setModal(!modal);
   
     const externalCloseBtn = <button className="close" style={{ position: 'absolute', top: '15px', right: '15px' }} onClick={toggle}>&times;</button>;
 
@@ -187,24 +193,43 @@ function Neighbourhood() {
            }</Col>
         <Col style={{padding:"40px"}}>
         {id && 
-        <>
+          <div style={{display:"flex", marginBottom:20, justifyContent:"center"}}>
         <ButtonGroup>
-          <Button color="warning"><Link to={{pathname:"/viewNeighbourhood/"+id.id,state: id}} style={{color:"white", textDecoration:"none"}}>View Precincts</Link></Button>
-        <Button>Update Neighbourhood</Button>
-        </ButtonGroup>
+         <Button color="warning" style={{color:"white"}} onClick={()=>viewSiteInfo(id,"Buildings")}>Buildings Emissions</Button>
+         <Button color="warning" style={{color:"white"}}  onClick={()=>viewSiteInfo(id,"Transport")}>Transport Emissions</Button>
+         <Button  color="warning" style={{color:"white"}}  onClick={()=>viewSiteInfo(id,"Infrastructure")}>Infrastructure Emissions</Button>
+          </ButtonGroup>
+      
         
-        </>
+        </div>
         }
- 
+        <Row>
+          <Col xs="8"><br/> <h6>Total Area based Emission</h6>
+          <Doughnut data={data_}/>
+          <Bar data= {data_} options={options}/>
+          </Col>
+          <Col></Col>
+        </Row>
+       
         </Col>
         <Col xs="2" style={{padding:"20px"}}>
+        {id && 
+        <>
+          <Button color="warning">
+          <Link to={{pathname:"/viewNeighbourhood/"+id.id,state: id}} style={{color:"white", textDecoration:"none"}}>View Precincts</Link>
+          </Button><br/><br/>
+        <Button>Update</Button>
+        </>
+        }
+        </Col>
+        {/* <Col xs="2" style={{padding:"20px"}}>
         <h6>Precints</h6>
        <br/>
         {docs && docs.map((p)=>(
             <p style={{ border:"1px solid #000000", borderColor: "black",textAlign: "center",  padding:10, 
                      borderRadius:10,}}>{p.precint}</p>
         ))}
-        </Col>
+        </Col> */}
 
     </Row>
 </Container>
