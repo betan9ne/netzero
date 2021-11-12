@@ -11,6 +11,7 @@ const ViewNeighbourhood = props => {
     const [precint, setprecint] = useState()
     const [p, setp] = useState(null)
     const [b, setb] = useState([])
+    const [gasData, setgasData] = useState()
     const [docs, setdocs] = useState([])
     const [blocks, setblocks] = useState([])
     const [labels, setlabels] = useState([])
@@ -19,9 +20,58 @@ const ViewNeighbourhood = props => {
     const [graphSummaries, setgraphSummaries] = useState([])
     const [filter, setfilter] = useState([])
     const [selectedFilter, setselectedFilter] = useState()
+    const [tag, settag] = useState("")
     const toggle = () => setModal(!modal);
 
+
   let history = useHistory()
+
+
+    
+  const predata_ = {
+    labels:labels,
+    datasets: [
+      {
+        label: '',
+        data: _data,
+        backgroundColor: [
+          'rgba(255, 99, 132, 0.5)',
+          'rgba(54, 162, 235, 0.5)',
+          'rgba(255, 206, 86, 0.5)',
+          'rgba(75, 192, 192, 0.5)',
+          'rgba(153, 102, 255, 0.5)',
+          'rgba(255, 159, 64, 0.5)',
+        ],
+        borderWidth: 1,
+      },
+    ],
+  };
+
+   
+const gasdata_ = {
+  labels:gasData&& gasData.map((g)=>(
+    g.label
+  )),
+  datasets: [
+    {
+      label: '',
+      data: gasData&& gasData.map((g)=>(
+        g.data
+      )),
+      backgroundColor: [
+        'rgba(255, 99, 132, 0.5)',
+        'rgba(54, 162, 235, 0.5)',
+        'rgba(255, 206, 86, 0.5)',
+        'rgba(75, 192, 192, 0.5)',
+        'rgba(153, 102, 255, 0.5)',
+        'rgba(255, 159, 64, 0.5)',
+      ],
+      borderWidth: 1,
+    },
+  ],
+};
+
+
 
   const data_ = {
     labels:baselineEmissions.map((a)=>(
@@ -44,6 +94,26 @@ const ViewNeighbourhood = props => {
         borderWidth: 1,
       },
     ],
+  };
+
+
+  const options = {
+    indexAxis: 'y',
+         elements: {
+      bar: {
+        borderWidth: 2,
+      },
+    },
+    responsive: true,
+    plugins: {
+      legend: {
+        position: 'right',
+      },
+      title: {
+        display: false,
+        text: '',
+      },
+    },
   };
 
   const scopeData = {
@@ -69,30 +139,76 @@ const ViewNeighbourhood = props => {
     ],
   };
 
-  const viewSiteInfo = (nb) =>{
-    setb(nb)
+  const viewSiteInfo = (nb, tag) =>{
+      setb(nb)
       getBlocks(nb)
-     
-    setselectedFilter("All Sites")
-    let neighbourhood = [];
-    let filter_ = []
-    setb(nb)
-     firebase.firestore().collection("sites").where("precinct_id","==", nb.id).get().then((doc)=>{
-    
-        doc.docs.forEach(document => {
-          const nb = {
-            id: document.id,
-            ...document.data()
-          }
-          neighbourhood.push(nb)
-        })
-
-        getDataandLabels(neighbourhood)
-      
-        setdocs(neighbourhood)
-       })
+      settag(tag)
+      let neighbourhood = [];
+         let buildings = []
+         getPrecinctData(nb.id)
+         setb(nb)
+          firebase.firestore().collection("sites").where("precinct_id","==", nb.id).get().then((doc)=>{
+         
+             doc.docs.forEach(document => {
+               const nb = {
+                 id: document.id,
+                 ...document.data()
+               }
+               neighbourhood.push(nb)
+             })
+            
+             //get buildings data
+             neighbourhood.filter((val)=>{
+               if(val.model_tag === tag)
+               {
+                 buildings.push(val)
+               }
+             })
+ 
+             console.log(buildings)
+            
+               getGasData(neighbourhood)
+              
+            let group = buildings.reduce((r, a) => {
+             r[a.model] = [...r[a.model] || [], a];
+          return r;
+         }, {});           
+         
+       let asd = Object.entries(group)
+         
+            getDataandLabels(asd)
+      //       console.log(result)
+         //       setfilter(filter_)
+                     })
 }
 
+
+const getGasData = (data)=>{
+  let total_water_heating = 0
+  let total_gas_cooking = 0
+
+    data.filter((val)=>{
+      if(val.gas_water_heating){
+        total_water_heating  = total_water_heating + val.gas_water_heating
+      }
+      if(val.gas_cooking){
+        total_gas_cooking = total_gas_cooking + val.gas_cooking
+      }
+    })
+
+    let asd = [
+      {
+        label : "Water Heating",
+        data : total_water_heating
+      },
+      {
+        label :"Cooking",
+        data : total_gas_cooking
+      }
+    ]
+  //  console.log(total_water_heating, total_gas_cooking)
+ setgasData(asd)
+ }
 const getDataandLabels = (_data) =>{
     let label = []
     let data = []
@@ -104,6 +220,7 @@ const getDataandLabels = (_data) =>{
     _data.forEach(element => {
         data.push(element.site_value)
     });
+    //console.log(_data)
     setdata_(data)            
     setlabels(label)
 }
@@ -111,7 +228,8 @@ const getDataandLabels = (_data) =>{
  
 
 const getPrecinctData = (p) =>{
-  firebase.firestore().collection("sites").where("precinct_id","==", p.id).onSnapshot((doc)=>{
+ // console.log(p)
+  firebase.firestore().collection("sites").where("precinct_id","==", p).onSnapshot((doc)=>{
     const data = [];
     doc.docs.forEach(document => {
       const nb = {
@@ -131,7 +249,7 @@ let energy = 0
 let gas = 0
 const getData = (_data) =>{
  
-  console.log(_data)
+ // console.log(_data)
   _data.filter((val)=>{
      
     if(val.model_tag === "Infrastructure")
@@ -157,10 +275,10 @@ const getData = (_data) =>{
   }
   )
     let asd =[
-      {
-        label : "Infrastructure",
-        data : infrastructure
-      },
+      // {
+      //   label : "Infrastructure",
+      //   data : infrastructure
+      // },
       {
         label: "Transport",
         data : transport
@@ -268,54 +386,39 @@ const getData = (_data) =>{
                  </> }</Col>
  
                  <Col xs="8"   style={{padding:"40px"}}>
+                        <Row>
+                          <Col xs="4"> <Doughnut data={scopeData} /></Col>
+                          <Col xs="4"> <Doughnut data={data_} /></Col>
+                        </Row>
+<br/><br/>
         {p &&
         <>
+        <div style={{display:"flex", marginBottom:20, justifyContent:"center"}}>
         <ButtonGroup>
-        <Button color="warning"><Link to={{pathname:"/viewPrecinct/"+p.id,state: p}} 
-        style={{color:"white", textDecoration:"none"}}>View Blocks</Link></Button>
-        <Button>Update Precinct</Button>
-        </ButtonGroup>
-         
+         <Button color="warning" style={{color:"white"}} onClick={()=>viewSiteInfo(p,"Buildings")}>Stationary Energy (Electricity)</Button>
+         <Button color="warning" style={{color:"white"}}  onClick={()=>viewSiteInfo(p,"Transport")}>Transport Emissions</Button>
+         <Button  color="warning" style={{color:"white"}}  onClick={()=>viewSiteInfo(p,"Gas")}>Stationary Energy (Gas)</Button>
+          </ButtonGroup>
+        </div>
         </>
         }
         <br/><br/>
         <h6>Baseline emissions from all blocks in this precinct</h6>
+        {tag}
+         { tag === "Gas" ? <Bar data={gasdata_} options={options} /> :
+         <Bar data= {predata_} options={options}/> }
+ 
         <br/>
       
-        {p ? <>
-<Row>
-  <Col xs="6"> <Doughnut data={scopeData} /></Col>
-  <Col xs="6">{graphSummaries.map((a)=>(
-    <>
-    <b>{a.label}</b>
-    <p>{a.data}</p>
-    </>
-  ))} </Col>
-</Row>
-<br/>
-<Row>
-  <Col xs="6"> <Doughnut data={data_} /></Col>
-  <Col xs="6">
-    {baselineEmissions.map((a)=>(
-      <>
-      <b>{a.label}</b>
-      <p>{a.data}</p>
-      </>
-    ))}
-  </Col>
-</Row></>
-   : null }
+
     <br/>
    
            </Col>
 
         <Col xs="2">
-                 <br/>
-       <h6> {blocks && blocks.length} Blocks</h6><br/>
-        {blocks && blocks.map((p)=>(
-            <p style={{ border:"1px solid #000000", borderColor: "black",textAlign: "center",  padding:10, 
-                     borderRadius:10, }}>{p.block}</p>
-        ))}
+        {p &&   <>  <Button color="warning"><Link to={{pathname:"/viewPrecinct/"+p.id,state: p}} 
+        style={{color:"white", textDecoration:"none"}}>View Blocks</Link></Button>
+        <Button>Update Precinct</Button> </> }
         </Col>
              </Row>
          </Container>    

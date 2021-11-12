@@ -212,8 +212,7 @@ const ViewPrecinct = props => {
               setdocs(transport)
              console.log(transport)
              getDataandLabels(transport)
-             getBuildingsData(transport)
-     
+             getBuildingsData(transport)     
                     })
     }
 
@@ -363,7 +362,6 @@ const ViewPrecinct = props => {
 
     }
 
-   
     const externalCloseBtn = <button className="close" style={{ position: 'absolute', top: '15px', right: '15px' }} onClick={toggle}>&times;</button>;
  
     return (
@@ -431,7 +429,7 @@ const ViewPrecinct = props => {
            
            {filter === "Transport" ? <Col xs="6"> <Pie data={pie2data_} /> </Col>: null}
            {filter === "Buildings" ? <>
-           <Col xs="6"> <Doughnut data={_buildingdata} /><br/>
+           <Col xs="8"> <Doughnut data={_buildingdata} /><br/>
                 <Bar data={_buildingdata} />
                 <br/>
                 <h6>Water Heating and  Cooking</h6>

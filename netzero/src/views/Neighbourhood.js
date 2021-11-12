@@ -5,6 +5,7 @@ import useGetNeighbourhood from '../hooks/useGetNeighbourhood'
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Col, Row, Input, Container, ButtonGroup } from 'reactstrap';
 import { Doughnut, Bar } from "react-chartjs-2";
 import { FiLogOut, FiUser, FiUsers } from "react-icons/fi";
+import BuildingsStackedChart from '../charts/BuildingsStackedChart';
 
 function Neighbourhood() {
 
@@ -12,9 +13,12 @@ function Neighbourhood() {
     let history = useHistory()
     const [neighbourhood, setneighbourhood] = useState("")
     const [docs, setdocs] = useState([])
+    const [gasData, setgasData] = useState()
     const [labels, setlabels] = useState([])
     const [modal, setModal] = useState(false);
- const [buildingsData, setbuildingsData] = useState([])   
+    const [tag, settag] = useState("") 
+    const [baselineEmissions, setbaselineEmissions] = useState([])
+    const [graphSummaries, setgraphSummaries] = useState([])
     const [id, setid] = useState(null)
     const [_data, setdata_] = useState([])
 
@@ -28,9 +32,96 @@ function Neighbourhood() {
           });
     }
 
+    const getPrecinctData = (id) =>{
+      firebase.firestore().collection("sites").where("neighbourhood_id","==", id).onSnapshot((doc)=>{
+        const data = [];
+        doc.docs.forEach(document => {
+          const nb = {
+            id: document.id,
+            ...document.data()
+          }
+          data.push(nb)
+        })
+        
+        getData(data)
+     })
+    }
+    
+    let infrastructure = 0
+    let transport = 0
+    let energy = 0
+    let gas = 0
+
+    const getData = (_data) =>{
+     
+     
+      _data.filter((val)=>{
+         
+        if(val.model_tag === "Infrastructure")
+        {
+          infrastructure +=val.total
+        }
+    
+        if(val.model_tag === "Transport")
+        {
+         transport +=val.total
+        }
+    
+        if(val.model_tag === "Buildings")
+        {
+         energy +=val.total_carbon_emissions_electricity
+        }
+        if(val.model_tag === "Buildings")
+        {
+         gas +=val.total_carbon_emissions_gas
+        }
+    
+        
+      }
+      )
+        let asd =[
+          // {
+          //   label : "Infrastructure",
+          //   data : infrastructure
+          // },
+          {
+            label: "Transport",
+            data : transport
+          },
+          {
+            label : "Energy",
+            data : energy
+          },
+          {
+            label : "Gas",
+            data : gas
+          }
+        ]
+    
+        let scopeData = [
+          {
+            label : "Scope 1",
+            data : energy + infrastructure
+          },
+          {
+            label : "Scope 2",
+            data : gas + transport
+          }
+        ]     
+       
+        setbaselineEmissions(asd)
+        setgraphSummaries(scopeData)
+     
+    }
+    
+
+
     const viewSiteInfo = (nb, tag) =>{
+      
+      settag(tag)
      let neighbourhood = [];
         let buildings = []
+        getPrecinctData(nb.id)
         setb(nb)
          firebase.firestore().collection("sites").where("neighbourhood_id","==", nb.id).get().then((doc)=>{
         
@@ -49,7 +140,10 @@ function Neighbourhood() {
                 buildings.push(val)
               }
             })
-            
+            setdocs(transport)
+           
+              getGasData(neighbourhood)
+             
            let group = buildings.reduce((r, a) => {
             r[a.model] = [...r[a.model] || [], a];
          return r;
@@ -62,8 +156,38 @@ function Neighbourhood() {
         //       setfilter(filter_)
                     })
     }
- 
+
+
   
+ const getGasData = (data)=>{
+   
+
+  let total_water_heating = 0
+  let total_gas_cooking = 0
+
+    data.filter((val)=>{
+      if(val.gas_water_heating){
+        total_water_heating  = total_water_heating + val.gas_water_heating
+      }
+      if(val.gas_cooking){
+        total_gas_cooking = total_gas_cooking + val.gas_cooking
+      }
+    })
+
+    let asd = [
+      {
+        label : "Water Heating",
+        data : total_water_heating
+      },
+      {
+        label :"Cooking",
+        data : total_gas_cooking
+      }
+    ]
+    console.log(total_water_heating, total_gas_cooking)
+ setgasData(asd)
+ }
+
     const getDataandLabels = (_data) =>{
         let label = []
         let data = []
@@ -101,6 +225,30 @@ function Neighbourhood() {
         ],
       };
 
+       
+    const gasdata_ = {
+      labels:gasData&& gasData.map((g)=>(
+        g.label
+      )),
+      datasets: [
+        {
+          label: '',
+          data: gasData&& gasData.map((g)=>(
+            g.data
+          )),
+          backgroundColor: [
+            'rgba(255, 99, 132, 0.5)',
+            'rgba(54, 162, 235, 0.5)',
+            'rgba(255, 206, 86, 0.5)',
+            'rgba(75, 192, 192, 0.5)',
+            'rgba(153, 102, 255, 0.5)',
+            'rgba(255, 159, 64, 0.5)',
+          ],
+          borderWidth: 1,
+        },
+      ],
+    };
+
       const options = {
         indexAxis: 'y',
              elements: {
@@ -136,6 +284,51 @@ function Neighbourhood() {
          })
     }
 
+    const baseline = {
+      labels:baselineEmissions.map((a)=>(
+        a.label
+      )),
+      datasets: [
+        {
+          label: '',
+          data: baselineEmissions.map((a)=>(
+            a.data
+          )),
+          backgroundColor: [
+            'rgba(255, 99, 132, 0.5)',
+            'rgba(54, 162, 235, 0.5)',
+            'rgba(255, 206, 86, 0.5)',
+            'rgba(75, 192, 192, 0.5)',
+            'rgba(153, 102, 255, 0.5)',
+            'rgba(255, 159, 64, 0.5)',
+          ],
+          borderWidth: 1,
+        },
+      ],
+    };
+
+    const scopeData = {
+      labels:graphSummaries.map((a)=>(
+        a.label
+      )),
+      datasets: [
+        {
+          label: '',
+          data: graphSummaries.map((a)=>(
+            a.data
+          )),
+          backgroundColor: [
+            'rgba(255, 99, 132, 0.5)',
+            'rgba(54, 162, 235, 0.5)',
+            'rgba(255, 206, 86, 0.5)',
+            'rgba(75, 192, 192, 0.5)',
+            'rgba(153, 102, 255, 0.5)',
+            'rgba(255, 159, 64, 0.5)',
+          ],
+          borderWidth: 1,
+        },
+      ],
+    };
     const addneighbourhood = ()=>{
         firebase.firestore().collection('neighbourhood').add({neighbourhood: neighbourhood, createdAt: new Date().toLocaleDateString()}).then((data)=>{
             toggle()
@@ -191,22 +384,28 @@ function Neighbourhood() {
            ))}
            </div>
            }</Col>
-        <Col style={{padding:"40px"}}>
+        <Col xs="8" style={{padding:"40px"}}>
+        <Row>
+          <Col xs="4"><Doughnut data={scopeData} /></Col>
+          <Col xs="4"><Doughnut data={baseline} /></Col>
+        </Row>
+        
+<br/><br/>
         {id && 
           <div style={{display:"flex", marginBottom:20, justifyContent:"center"}}>
         <ButtonGroup>
-         <Button color="warning" style={{color:"white"}} onClick={()=>viewSiteInfo(id,"Buildings")}>Buildings Emissions</Button>
+         <Button color="warning" style={{color:"white"}} onClick={()=>viewSiteInfo(id,"Buildings")}>Stationary Energy (Electricity)</Button>
          <Button color="warning" style={{color:"white"}}  onClick={()=>viewSiteInfo(id,"Transport")}>Transport Emissions</Button>
-         <Button  color="warning" style={{color:"white"}}  onClick={()=>viewSiteInfo(id,"Infrastructure")}>Infrastructure Emissions</Button>
+         <Button  color="warning" style={{color:"white"}}  onClick={()=>viewSiteInfo(id,"Gas")}>Stationary Energy (Gas)</Button>
           </ButtonGroup>
-      
-        
         </div>
         }
         <Row>
-          <Col xs="8"><br/> <h6>Total Area based Emission</h6>
-          <Doughnut data={data_}/>
-          <Bar data= {data_} options={options}/>
+          <Col xs="12"><br/> <h6>Total Area based Emission</h6>
+         {tag}
+         { tag === "Gas" ? <Bar data={gasdata_} options={options} /> :
+         <Bar data= {data_} options={options}/> }
+        {id && <BuildingsStackedChart data={id} /> }
           </Col>
           <Col></Col>
         </Row>

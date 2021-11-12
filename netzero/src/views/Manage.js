@@ -11,7 +11,7 @@ function Manage() {
     const [factorInput, setfactorInput] = useState("")
 
     useEffect(() => {
-        firebase.firestore().collection("models").where("tag","==", "Transport").onSnapshot((doc)=>{
+        firebase.firestore().collection("models").where("tag","==", "Buildings").onSnapshot((doc)=>{
             const users = [];
             doc.docs.forEach(document => {
               const nb = {
@@ -25,7 +25,7 @@ function Manage() {
     }, [])
 
     const addMOdelInput = () =>{
-        firebase.firestore().collection("models").add({model:modelInput, tag:"Infrastructure"}).then(()=>{
+        firebase.firestore().collection("models").add({model:modelInput, tag:"Buildings"}).then(()=>{
             setmodelInput("")
             alert("Model added Successfully")
           

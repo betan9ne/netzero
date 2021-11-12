@@ -129,6 +129,22 @@ else{
         sendToDB(asd)
         return
         }
+else if(model.tag === "Residential Pools")
+{
+            //residential  object
+            let asd = {
+                precinct_id: data.precinct_id,
+                neighbourhood_id: data.neighbourhood_id,
+                block_id: data.id,
+                model:model.model,
+                model_tag: model.tag,
+                scopeValue : scopeValue,
+                total: scopeValue * model.watts * model.hours *electricity
+            }
+            sendToDB(asd)
+            //end of residential object
+}
+
         else if(model.tag=== "Buildings")
         {
   //buildings object
@@ -167,7 +183,7 @@ else{
             {
                 console.log(doc.docs[0].id)
                firebase.firestore().collection("sites").doc(doc.docs[0].id).update(object).then(()=>{
-                   //alert("Scope updated")
+                  // alert("Scope updated")
                }).catch((e)=>{
                    alert(e)
                })
@@ -175,7 +191,7 @@ else{
             }
             else{
                 firebase.firestore().collection("sites").add(object).then((doc)=>{
-                  //  alert("scope added")
+                 //  alert("scope added")
                 }).catch((e)=>{
                     alert(e)
                 })
@@ -225,6 +241,12 @@ else{
         
                    </div> : null
             }
+
+            {tag.tag === "Residential Pools" ? <div style={{marginBottom:"20px"}}>
+                    <Input type={enableDisable(tag.id)} name="area" required onChange={(e) =>  handleChange(e.target.value, tag)} placeholder="area" />
+        
+                   </div> : null
+            }
                          </Col>
                        
                         <Col xs="4">
@@ -245,13 +267,15 @@ else{
             <br/><br/>
             
                     </Col>
-                    <Col xs="2"><br/> <h6>{model.tag}</h6><br/>
+                    <Col xs="3"><br/> <h6>Site Summary</h6><br/>
                     {sites.map((a)=>(
-                        <p>{a.model}<br/>{a.scopeValue}</p>
+                        <div style={{display:"flex", gridTemplateColumns:"1fr 1fr"}}>
+                        <p>{a.model}</p>
+                        <p style={{textAlign:"right"}}> - <b>{a.scopeValue}</b></p>
+                        </div>
                     ))}
                     </Col>
-                    <Col xs="4"></Col>
-                   
+                    
                 </Row>
             </Container>
          

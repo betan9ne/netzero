@@ -153,3 +153,27 @@
       //       data.push(element.scopeValue)
       //   });
       //  console.log(data)
+
+      {p ? <>
+        <Row>
+          <Col xs="6"></Col>
+          <Col xs="6">{graphSummaries.map((a)=>(
+            <>
+            <b>{a.label}</b>
+            <p>{a.data}</p>
+            </>
+          ))} </Col>
+        </Row>
+        <br/>
+        <Row>
+          <Col xs="6"></Col>
+          <Col xs="6">
+            {baselineEmissions.map((a)=>(
+              <>
+              <b>{a.label}</b>
+              <p>{a.data}</p>
+              </>
+            ))}
+          </Col>
+        </Row></>
+           : null }
