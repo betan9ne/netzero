@@ -4,9 +4,7 @@ import {useHistory, Link} from 'react-router-dom'
 import { Button, Modal, ModalHeader, ModalBody, Container, Row, Col, ModalFooter, Input, ButtonGroup } from 'reactstrap';
 import useGetBlocks from '../hooks/useGetBlocks';
 import { Bar, Pie, Doughnut } from "react-chartjs-2";
-
-
-
+import BaselineEmissionsPieChart from '../charts/BaselineEmissionsPieChart';
 const ViewPrecinct = props => {
   
     let history = useHistory()
@@ -19,6 +17,7 @@ const ViewPrecinct = props => {
     const [docs, setdocs] = useState([])
     const [labels, setlabels] = useState([])
     const [_data, setdata_] = useState([])
+    const [baselineData, setbaselineData] = useState([])
     const [buildingData, setbuildingData] = useState([])
     const [buildingLabels, setbuildingLabels] = useState([])
     
@@ -196,6 +195,26 @@ const ViewPrecinct = props => {
         })
     }
 
+    const getBaselineData = (b)=>{
+      setb(b)
+      let transport = [];
+     
+      firebase.firestore().collection("sites").where("block_id","==", b.id).get().then((doc)=>{        
+         doc.docs.forEach(document => {
+           const nb = {
+             id: document.id,
+             ...document.data()
+           }
+           transport.push(nb)
+         })
+         setbaselineData(transport)
+          console.log(transport)
+      
+                 })
+    }
+
+
+
     const viewSiteInfo = (filter) =>{
         setfilter(filter)
     
@@ -210,7 +229,7 @@ const ViewPrecinct = props => {
               transport.push(nb)
             })
               setdocs(transport)
-             console.log(transport)
+         
              getDataandLabels(transport)
              getBuildingsData(transport)     
                     })
@@ -397,7 +416,7 @@ const ViewPrecinct = props => {
                 </> : 
                 <>
                 {blocks.map((nb)=>(
-                    <p onClick={()=>setb(nb)}  key={nb.id} style={{background:nb.id === b.id ? "#fdb940" : "#ffffff", 
+                    <p onClick={()=>getBaselineData(nb)}  key={nb.id} style={{background:nb.id === b.id ? "#fdb940" : "#ffffff", 
                     border:"1px solid #000000", borderColor: "black",textAlign: "center",  padding:10, 
                      borderRadius:10, fontSize:16, color:nb.id === b.id ? "white":"black", cursor: "pointer",fontWeight:"bold",
                       marginBottom:30 }}>                  
@@ -408,6 +427,8 @@ const ViewPrecinct = props => {
                 }
        </Col>
          <Col xs="8" style={{padding:"40px"}}>
+         {b &&  <BaselineEmissionsPieChart data={baselineData} />}
+         <br/><br/>
         {b.id === undefined ? 
         <div>
       
@@ -444,6 +465,7 @@ const ViewPrecinct = props => {
          </Col>
            <Col  xs="2">
            <br/>
+            <>
            <h6>Site Summary</h6>
              <Button color="warning">
                  <Link to={{pathname:"/setSites/"+b.id,state: b}} 
@@ -457,6 +479,8 @@ const ViewPrecinct = props => {
                        </Row>                
                </div>            
         ))}
+        </>
+           
            </Col>
        </Row>
    </Container>

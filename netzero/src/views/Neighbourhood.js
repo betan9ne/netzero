@@ -6,6 +6,7 @@ import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Col, Row, Input, Co
 import { Doughnut, Bar } from "react-chartjs-2";
 import { FiLogOut, FiUser, FiUsers } from "react-icons/fi";
 import BuildingsStackedChart from '../charts/BuildingsStackedChart';
+import BaselineEmissionsPieChart from '../charts/BaselineEmissionsPieChart';
 
 function Neighbourhood() {
 
@@ -42,8 +43,8 @@ function Neighbourhood() {
           }
           data.push(nb)
         })
-        
-        getData(data)
+        setdocs(data)
+       
      })
     }
     
@@ -52,68 +53,7 @@ function Neighbourhood() {
     let energy = 0
     let gas = 0
 
-    const getData = (_data) =>{
-     
-     
-      _data.filter((val)=>{
-         
-        if(val.model_tag === "Infrastructure")
-        {
-          infrastructure +=val.total
-        }
-    
-        if(val.model_tag === "Transport")
-        {
-         transport +=val.total
-        }
-    
-        if(val.model_tag === "Buildings")
-        {
-         energy +=val.total_carbon_emissions_electricity
-        }
-        if(val.model_tag === "Buildings")
-        {
-         gas +=val.total_carbon_emissions_gas
-        }
-    
-        
-      }
-      )
-        let asd =[
-          // {
-          //   label : "Infrastructure",
-          //   data : infrastructure
-          // },
-          {
-            label: "Transport",
-            data : transport
-          },
-          {
-            label : "Energy",
-            data : energy
-          },
-          {
-            label : "Gas",
-            data : gas
-          }
-        ]
-    
-        let scopeData = [
-          {
-            label : "Scope 1",
-            data : energy + infrastructure
-          },
-          {
-            label : "Scope 2",
-            data : gas + transport
-          }
-        ]     
-       
-        setbaselineEmissions(asd)
-        setgraphSummaries(scopeData)
-     
-    }
-    
+   
 
 
     const viewSiteInfo = (nb, tag) =>{
@@ -140,7 +80,7 @@ function Neighbourhood() {
                 buildings.push(val)
               }
             })
-            setdocs(transport)
+          //  setdocs(transport)
            
               getGasData(neighbourhood)
              
@@ -184,7 +124,7 @@ function Neighbourhood() {
         data : total_gas_cooking
       }
     ]
-    console.log(total_water_heating, total_gas_cooking)
+     
  setgasData(asd)
  }
 
@@ -211,7 +151,7 @@ function Neighbourhood() {
         datasets: [
           {
             label: '',
-            data: _data,
+            data: _data && _data,
             backgroundColor: [
               'rgba(255, 99, 132, 0.5)',
               'rgba(54, 162, 235, 0.5)',
@@ -280,7 +220,7 @@ function Neighbourhood() {
               }
               neighbourhood.push(nb)
             })
-            setdocs(neighbourhood)
+         //   setdocs(neighbourhood)
          })
     }
 
@@ -385,10 +325,8 @@ function Neighbourhood() {
            </div>
            }</Col>
         <Col xs="8" style={{padding:"40px"}}>
-        <Row>
-          <Col xs="4"><Doughnut data={scopeData} /></Col>
-          <Col xs="4"><Doughnut data={baseline} /></Col>
-        </Row>
+           {docs && 
+           <BaselineEmissionsPieChart data={docs} />}
         
 <br/><br/>
         {id && 

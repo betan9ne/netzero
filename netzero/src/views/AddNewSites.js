@@ -1,20 +1,15 @@
-import React,{useEffect, useState, useReducer} from 'react'
+import React,{useEffect, useState} from 'react'
 import firebase from '../../src/firebase'
 import {useHistory, Link} from 'react-router-dom' 
-import { Button, Modal,Row, ModalHeader,  ModalBody, ModalFooter, Input, Col, Container, Form } from 'reactstrap';
-import { FiEdit } from "react-icons/fi";
+import { Button, Row,  Input, Col, Container, } from 'reactstrap';
+import { FiCheck, FiEdit } from "react-icons/fi";
 import useGetSites from '../hooks/useGetSites';
-
- 
 
 const  AddNewSites = props => {
     let history = useHistory()
     let data = props.location.state
-   
     let sites = useGetSites(data.id).docs
-    
     const [docs, setdocs] = useState([])
-  
     const [currentForm, setcurrentForm] = useState("")
     const [scopeValue, setscopeValue] = useState("")
     const [modelInput1, setmodelInput1] = useState("")
@@ -183,7 +178,7 @@ else if(model.tag === "Residential Pools")
             {
                 console.log(doc.docs[0].id)
                firebase.firestore().collection("sites").doc(doc.docs[0].id).update(object).then(()=>{
-                  // alert("Scope updated")
+                  setcurrentForm("")
                }).catch((e)=>{
                    alert(e)
                })
@@ -192,6 +187,7 @@ else if(model.tag === "Residential Pools")
             else{
                 firebase.firestore().collection("sites").add(object).then((doc)=>{
                  //  alert("scope added")
+                 setcurrentForm("")
                 }).catch((e)=>{
                     alert(e)
                 })
@@ -219,47 +215,46 @@ else if(model.tag === "Residential Pools")
                     <b>{d.l}</b><br/><br/>
                     {d.tag.map((tag, index)=>(
                         <form  key={index}  id={tag.id}>
-                        <Row>
-                        <Col xs="3">
+                        <Row style={{marginBottom:"10px"}}>
+                        <Col xs="2">
                         {tag.tag === "Transport" ? 
                        
-                        <div style={{display:"flex", marginBottom:"20px"}}>
+                        <div style={{display:"flex", margin:"0"}}>
                     <Input type={enableDisable(tag.id)} name="cars" style={{marginRight:"10px"}} required onChange={(e) => handleChange(e.target.value, tag)}  placeholder="cars" />
             <Input type={enableDisable(tag.id)} name="kms" required onChange={(e) =>  handleChange(e.target.value, tag, 2)} placeholder=" kms" />
            <br/>
                       </div> : null
             }
 
-            {tag.tag === "Infrastructure" ? <div style={{marginBottom:"20px"}}>
+            {tag.tag === "Infrastructure" ? <div style={{margin:"0"}}>
                     <Input type={enableDisable(tag.id)} name="lights" required onChange={(e) => handleChange(e.target.value, tag)} placeholder="lights" />
-            
-                      </div> : null
+                 </div> : null
             }
 
-            {tag.tag === "Buildings" ? <div style={{marginBottom:"20px"}}>
-                    <Input type={enableDisable(tag.id)} name="area" required onChange={(e) =>  handleChange(e.target.value, tag)} placeholder="area" />
-        
-                   </div> : null
+            {tag.tag === "Buildings" ?   <div style={{display:"flex", margin:"0"}}>
+              <Input type={enableDisable(tag.id)} name="area" required onChange={(e) =>  handleChange(e.target.value, tag)} 
+              placeholder={tag.model.includes("Residential") ? "people" : "area"} />
+             </div> : null
             }
-
-            {tag.tag === "Residential Pools" ? <div style={{marginBottom:"20px"}}>
+            {/* {tag.model.includes("Residential") ? <>{tag.model}</> : null} */}
+            {tag.tag === "Residential Pools" ?  <div style={{margin:"0"}}>
+           
                     <Input type={enableDisable(tag.id)} name="area" required onChange={(e) =>  handleChange(e.target.value, tag)} placeholder="area" />
-        
-                   </div> : null
+                </div> : null
             }
                          </Col>
-                       
+                         <Col xs="2">
+                           
+                           {currentForm === tag.id ? <Button onClick={()=>calculate()} color="warning" type="button" style={{color:"white"}} ><FiCheck size={24} color="white"   /></Button>: 
+                           <Button color="" type="button" onClick={()=>getCurrentForm(tag.id, tag)} style={{color:"white"}} ><FiEdit size={24} color="black"   /></Button>     }           
+                           </Col>
                         <Col xs="4">
-                        <p>
+                        <p> 
                         {tag.model}                        
                         </p></Col>
-                        <Col>
-                           
-                        {currentForm === tag.id ? <Button onClick={()=>calculate()} color="warning" type="button" style={{color:"white"}} >Save</Button>: 
-                        <Button color="warning" type="button" onClick={()=>getCurrentForm(tag.id, tag)} style={{color:"white"}} >Edit</Button>     }           
-                        </Col>
-</Row>
-</form>
+                     
+                        </Row>
+                        </form>
                     ))}
                      </>
                     )
@@ -267,6 +262,7 @@ else if(model.tag === "Residential Pools")
             <br/><br/>
             
                     </Col>
+
                     <Col xs="3"><br/> <h6>Site Summary</h6><br/>
                     {sites.map((a)=>(
                         <div style={{display:"flex", gridTemplateColumns:"1fr 1fr"}}>

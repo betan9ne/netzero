@@ -4,6 +4,7 @@ import {useHistory, Link} from 'react-router-dom'
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Container, Row, Col, Input, ButtonGroup } from 'reactstrap';
 import useGetPrecinct from '../hooks/useGetPrecinct';
 import { Doughnut, Bar } from "react-chartjs-2";
+import BaselineEmissionsPieChart from '../charts/BaselineEmissionsPieChart';
 const ViewNeighbourhood = props => {
     let data = props.location.state
     let precinct = useGetPrecinct(data.id).docs
@@ -156,7 +157,7 @@ const gasdata_ = {
                }
                neighbourhood.push(nb)
              })
-            
+            setdocs(neighbourhood)
              //get buildings data
              neighbourhood.filter((val)=>{
                if(val.model_tag === tag)
@@ -386,10 +387,7 @@ const getData = (_data) =>{
                  </> }</Col>
  
                  <Col xs="8"   style={{padding:"40px"}}>
-                        <Row>
-                          <Col xs="4"> <Doughnut data={scopeData} /></Col>
-                          <Col xs="4"> <Doughnut data={data_} /></Col>
-                        </Row>
+                 {p &&  <BaselineEmissionsPieChart data={docs} />}
 <br/><br/>
         {p &&
         <>
@@ -415,9 +413,9 @@ const getData = (_data) =>{
    
            </Col>
 
-        <Col xs="2">
+        <Col xs="2" style={{padding:"20px"}}>
         {p &&   <>  <Button color="warning"><Link to={{pathname:"/viewPrecinct/"+p.id,state: p}} 
-        style={{color:"white", textDecoration:"none"}}>View Blocks</Link></Button>
+        style={{color:"white", textDecoration:"none"}}>View Blocks</Link></Button><br/><br/>
         <Button>Update Precinct</Button> </> }
         </Col>
              </Row>
