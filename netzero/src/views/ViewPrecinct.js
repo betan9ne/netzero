@@ -13,6 +13,7 @@ const ViewPrecinct = props => {
     let blocks = useGetBlocks(data.id).docs
     const [modal, setModal] = useState(false);
     const [block, setblock] = useState()
+    const [tag, settag] = useState("") 
     const [b, setb] = useState([])
     const [docs, setdocs] = useState([])
     const [labels, setlabels] = useState([])
@@ -20,7 +21,7 @@ const ViewPrecinct = props => {
     const [baselineData, setbaselineData] = useState([])
     const [buildingData, setbuildingData] = useState([])
     const [buildingLabels, setbuildingLabels] = useState([])
-    
+    const [gasData, setgasData] = useState()
     const [buildingValue, setbuildingValue] = useState([])
     const [pie2data, setpie2data] = useState([])
     const [filter, setfilter] = useState([])
@@ -29,45 +30,87 @@ const ViewPrecinct = props => {
     const [_total, set_total] = useState(0)
     const toggle = () => setModal(!modal);
 
-    const gasData = {
-      labels: docs.map((a)=>(
-        a.model
+    // const gasData = {
+    //   labels: docs.map((a)=>(
+    //     a.model
+    //   )),
+    //   datasets: [
+    //     {
+    //       label: 'Water Heating (Gas)',
+    //       data: docs.map((a)=>(
+    //         a.gas_water_heating
+    //       )),
+    //       backgroundColor: 'rgba(255, 99, 132, 0.2)',
+    //       borderWidth: 2,
+    //     },
+    //     {
+    //       label: 'Cooking (Gas)',
+    //       data: docs.map((a)=>(
+    //         a.gas_cooking
+    //       )),
+    //       backgroundColor: 'rgba(54, 162, 235, 0.2)',
+    //       borderWidth: 2,
+    //     },
+        
+    //    ],
+       
+    // };
+    
+    // const gasoptions = {
+    //   scales: {
+    //     y: {
+    //       stacked: true,
+    //       ticks: {
+    //         beginAtZero: true
+    //       }
+    //     },
+    //     x: {
+    //       stacked: true
+    //     }
+    //   }
+    // };
+
+    const gasdata_ = {
+      labels:gasData&& gasData.map((g)=>(
+        g.label
       )),
       datasets: [
         {
-          label: 'Water Heating (Gas)',
-          data: docs.map((a)=>(
-            a.gas_water_heating
+          label: '',
+          data: gasData&& gasData.map((g)=>(
+            g.data
           )),
-          backgroundColor: 'rgba(255, 99, 132, 0.2)',
-          borderWidth: 2,
+          backgroundColor: [
+            'rgba(255, 99, 132, 0.5)',
+            'rgba(54, 162, 235, 0.5)',
+            'rgba(255, 206, 86, 0.5)',
+            'rgba(75, 192, 192, 0.5)',
+            'rgba(153, 102, 255, 0.5)',
+            'rgba(255, 159, 64, 0.5)',
+          ],
+          borderWidth: 1,
         },
-        {
-          label: 'Cooking (Gas)',
-          data: docs.map((a)=>(
-            a.gas_cooking
-          )),
-          backgroundColor: 'rgba(54, 162, 235, 0.2)',
-          borderWidth: 2,
-        },
-        
-       ],
-       
+      ],
     };
-    
-    const gasoptions = {
-      scales: {
-        y: {
-          stacked: true,
-          ticks: {
-            beginAtZero: true
-          }
+
+      const gasoptions = {
+        indexAxis: 'y',
+             elements: {
+          bar: {
+            borderWidth: 2,
+          },
         },
-        x: {
-          stacked: true
-        }
-      }
-    };
+        responsive: true,
+        plugins: {
+          legend: {
+            position: 'right',
+          },
+          title: {
+            display: false,
+            text: '',
+          },
+        },
+      };
 
     const data_ = {
         labels:labels,
@@ -196,6 +239,7 @@ const ViewPrecinct = props => {
     }
 
     const getBaselineData = (b)=>{
+      console.log(b)
       setb(b)
       let transport = [];
      
@@ -213,25 +257,69 @@ const ViewPrecinct = props => {
                  })
     }
 
+    const getGasData = (data)=>{
+   
 
-
-    const viewSiteInfo = (filter) =>{
-        setfilter(filter)
+      let total_water_heating = 0
+      let total_gas_cooking = 0
     
-         let transport = [];
-     
-         firebase.firestore().collection("sites").where("block_id","==", b.id).where("model_tag","==", filter).get().then((doc)=>{        
+        data.filter((val)=>{
+          if(val.gas_water_heating){
+            total_water_heating  = total_water_heating + val.gas_water_heating
+          }
+          if(val.gas_cooking){
+            total_gas_cooking = total_gas_cooking + val.gas_cooking
+          }
+        })
+    
+        let asd = [
+          {
+            label : "Water Heating",
+            data : total_water_heating
+          },
+          {
+            label :"Cooking",
+            data : total_gas_cooking
+          }
+        ]
+         
+     setgasData(asd)
+     }
+
+    const viewSiteInfo =  (nb, tag) =>{
+ 
+      settag(tag)
+     let neighbourhood = [];
+        let buildings = []
+         firebase.firestore().collection("sites").where("block_id","==", nb.id).get().then((doc)=>{        
             doc.docs.forEach(document => {
               const nb = {
                 id: document.id,
                 ...document.data()
               }
-              transport.push(nb)
+              neighbourhood.push(nb)
+            })           
+            //get buildings data
+            neighbourhood.filter((val)=>{
+              if(val.model_tag === tag)
+              {
+                buildings.push(val)
+              }
             })
-              setdocs(transport)
-         
-             getDataandLabels(transport)
-             getBuildingsData(transport)     
+          //  setdocs(transport)
+           
+          getBuildingsData(neighbourhood)
+             
+           let group = buildings.reduce((r, a) => {
+            r[a.model] = [...r[a.model] || [], a];
+         return r;
+        }, {});           
+        
+      let asd = Object.entries(group)
+
+           getDataandLabels(asd)
+     //       console.log(result)
+        //       setfilter(filter_)
                     })
     }
 
@@ -380,12 +468,10 @@ const ViewPrecinct = props => {
         })
 
     }
-
-    const externalCloseBtn = <button className="close" style={{ position: 'absolute', top: '15px', right: '15px' }} onClick={toggle}>&times;</button>;
  
     return (
         <div>
-            <Modal isOpen={modal} toggle={toggle}   external={externalCloseBtn}>
+            <Modal isOpen={modal} toggle={toggle}>
         <ModalHeader>Add new block</ModalHeader>
         <ModalBody>
         <Input type="text" required value={block} onChange={e =>setblock(e.target.value)} placeholder="block" />       
@@ -436,11 +522,21 @@ const ViewPrecinct = props => {
          <>
          <div style={{display:"flex", marginBottom:20, justifyContent:"center"}}>
          <ButtonGroup>
-         <Button color="warning" style={{color:"white"}} onClick={()=>viewSiteInfo("Buildings")}>Buildings Emissions</Button>
-         <Button color="warning" style={{color:"white"}}  onClick={()=>viewSiteInfo("Transport")}>Transport Emissions</Button>
-         <Button  color="warning" style={{color:"white"}}  onClick={()=>viewSiteInfo("Infrastructure")}>Infrastructure Emissions</Button>
-          </ButtonGroup>
+         <Button color="warning" style={{color:"white"}} onClick={()=>viewSiteInfo(b,"Buildings")}>Stationary Energy (Electricity)</Button>
+         <Button color="warning" style={{color:"white"}}  onClick={()=>viewSiteInfo(b,"Transport")}>Transport Emissions</Button>
+         <Button  color="warning" style={{color:"white"}}  onClick={()=>viewSiteInfo(b,"Gas")}>Stationary Energy (Gas)</Button>
+        </ButtonGroup>
          </div>
+
+         <Row>
+          <Col xs="12"><br/> <h6>Total Area based Emission</h6>
+         {tag}
+         { tag === "Gas" ? <Bar data={gasdata_} options={gasoptions} /> :
+         <Bar data= {data_} options={options}/> }
+          </Col>
+          <Col></Col>
+        </Row>
+
          <Row>
             {filter === "Transport" ?<Col xs="6"><Pie data={data_}   /> </Col> : ""}
           {filter === "Transport" ?  <Col xs="6"> <Bar data= {data_} options={options}/></Col> : null}
@@ -463,6 +559,7 @@ const ViewPrecinct = props => {
          </>
          }       
          </Col>
+
            <Col  xs="2">
            <br/>
             <>

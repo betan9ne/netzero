@@ -13,6 +13,7 @@ import UpdateSites from "./views/UpdateSites";
 import AddSites from "./views/AddSites";
 import Manage from "./views/Manage";
 import AddNewSites from "./views/AddNewSites";
+import VIewBlocks from "./views/VIewBlocks";
 function App() {
 
 const [state, setstate] = useState(false)  
@@ -35,7 +36,7 @@ useEffect(() => {
             <Switch>      
             <Route path="/viewNeighbourhood/:id" component={ViewNeighbourhood}></Route>
             <Route path="/CreateUser"><CreateUser/></Route>
-            <Route path="/viewPrecinct/:id" component={ViewPrecinct}></Route>
+            <Route path="/viewPrecinct/:id" component={VIewBlocks}></Route>
             <Route path="/setSites/:id" component={AddNewSites}></Route>
             <Route path="/manage" component={Manage}></Route>
             <Route path="/viewBlock/:id" component={ViewBlock}></Route>

@@ -208,15 +208,15 @@ else if(model.tag === "Residential Pools")
             <Container style={{maxWidth:"100%"}}>
             
                 <Row>               
-                    <Col xs="8">                  
+                    <Col xs="6">                  
                     <br/>
                 {docs && docs.map((d)=>(
                     <>
                     <b>{d.l}</b><br/><br/>
                     {d.tag.map((tag, index)=>(
-                        <form  key={index}  id={tag.id}>
-                        <Row style={{marginBottom:"10px"}}>
-                        <Col xs="2">
+                        <form  key={index} style={{background:"#efefef", padding:"10px", marginBottom:"10px", borderRadius:"15px"}} id={tag.id}>
+                        <Row style={{ }}>
+                        <Col xs="4">
                         {tag.tag === "Transport" ? 
                        
                         <div style={{display:"flex", margin:"0"}}>
@@ -248,7 +248,7 @@ else if(model.tag === "Residential Pools")
                            {currentForm === tag.id ? <Button onClick={()=>calculate()} color="warning" type="button" style={{color:"white"}} ><FiCheck size={24} color="white"   /></Button>: 
                            <Button color="" type="button" onClick={()=>getCurrentForm(tag.id, tag)} style={{color:"white"}} ><FiEdit size={24} color="black"   /></Button>     }           
                            </Col>
-                        <Col xs="4">
+                        <Col xs="6">
                         <p> 
                         {tag.model}                        
                         </p></Col>
@@ -263,13 +263,16 @@ else if(model.tag === "Residential Pools")
             
                     </Col>
 
-                    <Col xs="3"><br/> <h6>Site Summary</h6><br/>
+                    <Col xs="6"><br/> <h6>Site Summary</h6><br/>
+                    <div style={{display:"grid", gridTemplateColumns:"1fr 1fr 1fr 1fr", gap:"20px" }}>
                     {sites.map((a)=>(
-                        <div style={{display:"flex", gridTemplateColumns:"1fr 1fr"}}>
+                        <div style={{background:"#efefef", padding:"10px", borderRadius:"15px"}}>
                         <p>{a.model}</p>
-                        <p style={{textAlign:"right"}}> - <b>{a.scopeValue}</b></p>
+                         <b>{a.scopeValue}</b>
                         </div>
                     ))}
+                    </div>
+                
                     </Col>
                     
                 </Row>

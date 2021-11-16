@@ -4,7 +4,7 @@ import { Doughnut } from "react-chartjs-2";
 import firebase from '../../src/firebase'
 
 const BaselineEmissionsPieChart =({data})=> {
-  console.log(data)
+  
    const [graphSummaries, setgraphSummaries] = useState([])
     const [baselineEmissions, setbaselineEmissions] = useState([])
 

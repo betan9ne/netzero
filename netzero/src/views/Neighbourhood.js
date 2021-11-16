@@ -339,9 +339,8 @@ function Neighbourhood() {
         </div>
         }
         <Row>
-          <Col xs="12"><br/> <h6>Total Area based Emission</h6>
-         {tag}
-         { tag === "Gas" ? <Bar data={gasdata_} options={options} /> :
+          <Col xs="12"><br/>  
+          { tag === "Gas" ? <Bar data={gasdata_} options={options} /> :
          <Bar data= {data_} options={options}/> }
         {id && <BuildingsStackedChart data={id} /> }
           </Col>

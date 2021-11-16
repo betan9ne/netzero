@@ -18,9 +18,7 @@ const ViewNeighbourhood = props => {
     const [labels, setlabels] = useState([])
     const [_data, setdata_] = useState([])
     const [baselineEmissions, setbaselineEmissions] = useState([])
-    const [graphSummaries, setgraphSummaries] = useState([])
-    const [filter, setfilter] = useState([])
-    const [selectedFilter, setselectedFilter] = useState()
+    const [graphSummaries, setgraphSummaries] = useState([]) 
     const [tag, settag] = useState("")
     const toggle = () => setModal(!modal);
 
@@ -75,15 +73,11 @@ const gasdata_ = {
 
 
   const data_ = {
-    labels:baselineEmissions.map((a)=>(
-      a.label
-    )),
+    labels:labels,
     datasets: [
       {
         label: '',
-        data: baselineEmissions.map((a)=>(
-          a.data
-        )),
+        data: _data,
         backgroundColor: [
           'rgba(255, 99, 132, 0.5)',
           'rgba(54, 162, 235, 0.5)',
@@ -178,8 +172,7 @@ const gasdata_ = {
        let asd = Object.entries(group)
          
             getDataandLabels(asd)
-      //       console.log(result)
-         //       setfilter(filter_)
+   
                      })
 }
 
@@ -210,26 +203,27 @@ const getGasData = (data)=>{
   //  console.log(total_water_heating, total_gas_cooking)
  setgasData(asd)
  }
-const getDataandLabels = (_data) =>{
-    let label = []
-    let data = []
-    _data.forEach(element => {
-    //    console.log(element)
-        label.push(element.site_name)
-    });
+ const getDataandLabels = (_data) =>{
+  let label = []
+  let data = []
+  
+  _data.forEach(e=>{
+    label.push(e[0])
+     
+    let asd = e[1].reduce( function(a, b){
+      return a + parseInt(b['scopeValue']);
+  }, 0);
+  data.push(asd) 
+  })
 
-    _data.forEach(element => {
-        data.push(element.site_value)
-    });
-    //console.log(_data)
-    setdata_(data)            
-    setlabels(label)
+  setdata_(data)            
+  setlabels(label)
 }
 
  
 
 const getPrecinctData = (p) =>{
- // console.log(p)
+ // viewSiteInfo(p, "Buildings")
   firebase.firestore().collection("sites").where("precinct_id","==", p).onSnapshot((doc)=>{
     const data = [];
     doc.docs.forEach(document => {
@@ -400,13 +394,22 @@ const getData = (_data) =>{
         </div>
         </>
         }
-        <br/><br/>
+
+        <Row>
+          <Col xs="12"><br/>  
+           { tag === "Gas" ? <Bar data={gasdata_} options={options} /> :
+         data_ ?  <Bar data= {data_} options={options}/>  : null}
+       
+          </Col>
+          <Col></Col>
+        </Row>
+        {/* <br/><br/>
         <h6>Baseline emissions from all blocks in this precinct</h6>
         {tag}
          { tag === "Gas" ? <Bar data={gasdata_} options={options} /> :
          <Bar data= {predata_} options={options}/> }
  
-        <br/>
+        <br/> */}
       
 
     <br/>
