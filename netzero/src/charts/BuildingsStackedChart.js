@@ -1,12 +1,14 @@
+import { element, objectOf } from 'prop-types';
 import React,{useState} from 'react'
 import { Bar } from "react-chartjs-2";
 import firebase from '../../src/firebase'
-
+import {Sum } from "react-lodash"
 const BuildingsStackedChart =({data}) => {
+ 
     let prop = data
      const [docs, setdocs] = useState([])
-const [stackData, setstackData] = useState([])
-
+    const [labels, setlabels] = useState([])
+    const [stackedData_, setstackedData] = useState([])
   const [lighting, setLighting] = useState([])
   const [lighting_external, setLightingExternal] = useState([])
   const [appliances, setAppliances] = useState([])
@@ -15,7 +17,43 @@ const [stackData, setstackData] = useState([])
   const [space_heating, setSpaceHeating] = useState([])
   const [water_heating, setWaterHeating] = useState([])
 
-    React.useEffect(()=>(
+  let lightingObject = {
+    label : "lighting",
+    data : [1,2,3,4,5,6,7,2,4,6,8,9,1,3]
+  }
+ let stackedObject = [
+   {
+     label : "lighting",
+     data : [1,2,3,4,5,6,7,2,4,6,8,9,1,3]
+   },
+   {
+    label : "lighting external",
+    data : [11,22,33,44,55,66,77,2,4,6,8,0,1,3]
+  },
+  {
+    label : "appliances",
+    data : [111,222,333,444,555,666,77,2,4,6,8,0,1,3]
+  },
+  {
+    label : "space heating",
+    data : [2,4,6,8,0,1,3, 2,4,6,8,0,1,3]
+  },
+  {
+    label : "cooling",
+    data : [1,3,5,7,9,6,4, 2,4,6,8,0,1,3]
+  },
+  {
+    label : "cooking",
+    data : [2,3,4,5,6,7,8, 2,4,6,8,0,1,3]
+  },
+  {
+    label : "water heating",
+    data : [9,8,7,6,5,4,3, 2,4,6,8,0,1,3]
+  }
+
+ ]
+
+     React.useEffect(()=>(
     viewSiteInfo()
         ),[data])
 
@@ -28,82 +66,88 @@ const [stackData, setstackData] = useState([])
                 ...document.data()
               }
               data.push(nb)
+            }) 
+     
+      let group =  data.reduce((r, e) =>{
+        let l =  e.model
+        if(!r[l])r[l] = {l, values:[e]}
+        else r[l].values.push(e)
+        return r
+      }, {})
+          setlabels(Object.keys(group))
+           setstackedData(Object.values(group))
+           createStackData()    
             })
-        //     let group = data.reduce((r, a) => {
-        //       r[a.model_tag] = [...r[a.model_tag] || [], a];
-        //    return r;
-        //   }, {});           
-          
-        // let asd = Object.entries(group)
-              setdocs(data)   
-              createStackData(data)    
-             
-       })
     }
     
-    const createStackData = (data) =>{
-      let lighting = []
-      let lighting_external = []
-      let appliances = []
-      let cooking = []
-      let cooling = []
-      let space_heating = []
-      let water_heating = []
+  
 
-      let lighting_total = 0
+    const createStackData = () =>{
+    let lighting = []
+    let lighting_external = []
+    let cooking = []
+    let cooling = []
+    let water_heating = []
+    let space_heating = []
+    let appliances = []
+      
+    stackedData_.map((a)=>{     
+         let asd = a.values.map(item => item.lighting).reduce((prev, curr) => prev + curr, 0)
+         lighting.push(asd)   
+    })
+    setLighting(lighting)
+  
+    stackedData_.map((a)=>{     
+      let asd = a.values.map(item => item.lighting_external).reduce((prev, curr) => prev + curr, 0)
+      lighting_external.push(asd)   
+ })
+ 
+ stackedData_.map((a)=>{     
+  let asd = a.values.map(item => item.cooking).reduce((prev, curr) => prev + curr, 0)
+  cooking.push(asd)   
+})
+ 
+stackedData_.map((a)=>{     
+  let asd = a.values.map(item => item.appliances).reduce((prev, curr) => prev + curr, 0)
+  appliances.push(asd)   
+})
+ 
+stackedData_.map((a)=>{     
+  let asd = a.values.map(item => item.cooling).reduce((prev, curr) => prev + curr, 0)
+  cooling.push(asd)   
+})
 
-      data.filter((val)=>{
-        if(val.lighting){
-          lighting_total +=val.lighting
-          lighting.push(lighting_total)
-        }
-         if(val.lighting_external)
-        {
-          lighting_external.push(val.lighting_external)
-        }
-         if(val.appliances)
-        {
-          appliances.push(val.appliances)
-        }
-         if(val.space_heating){
-          space_heating.push(val.space_heating)
-        }
-         if(val.cooling)
-        {
-          cooling.push(val.cooling)
-        }
-         if(val.water_heating)
-        {
-          water_heating.push(val.water_heating)
-        }         
-         if(val.cooking){
-          cooking.push(val.cooking)
-        }
-     
+stackedData_.map((a)=>{     
+  let asd = a.values.map(item => item.space_heating).reduce((prev, curr) => prev + curr, 0)
+  space_heating.push(asd)   
+})
 
-     //   console.log(finalData)
-        
-      })
-   //   console.log(lighting)    
-      setLighting(lighting)
-      setLightingExternal(lighting_external)
-      setCooking(cooking)
+stackedData_.map((a)=>{     
+  let asd = a.values.map(item => item.water_heating).reduce((prev, curr) => prev + curr, 0)
+  water_heating.push(asd)   
+}) 
+  
+  
+       setLightingExternal(lighting_external)
+       setCooking(cooking)
       setCooling(cooling)
-      setSpaceHeating(space_heating)
-      setWaterHeating(water_heating)
-      setAppliances(appliances)
+     setSpaceHeating(space_heating)
+       setWaterHeating(water_heating)
+    setAppliances(appliances)
     }
  
-  
+    
+ 
     const stackedData = {
-        labels: docs.map((a)=>(
-          a.model
+        labels: stackedData_.map((a)=>(
+          a.l
         )),
         datasets: [
+         
           {
             label: 'Lighting',
-            data: lighting.map((a)=>(
-              a
+            data:  lighting.map((l)=>(
+              l
             )),
             backgroundColor: 'rgba(255, 99, 132, 1)',
             borderWidth: 2,
@@ -132,7 +176,7 @@ const [stackData, setstackData] = useState([])
             backgroundColor:  'rgba(75, 192, 192,1)',
             borderWidth: 2,
           },
-          {
+            {
             label: 'Cooling',
             data: cooling.map((a)=>(
               a
@@ -176,9 +220,12 @@ const [stackData, setstackData] = useState([])
       };
   
     return (
-        <div>
-      
+        <div style={{marginTop:"40px"}}>
+            <h6>Stationery Energy (Electricity) By End User</h6>
              <Bar data={stackedData} options={stackedDataoptions} />
+
+  
+         
         </div>
     )
 }
