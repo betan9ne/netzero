@@ -153,7 +153,7 @@ else if(model.tag === "Residential Pools")
       model_tag: model.tag,
       scopeValue : scopeValue,
       total_carbon_emissions_electricity : parseInt(scopeValue) * parseInt(model.electricity) * electricity,
-      lighting :f1 * model.lighting /100,
+      lighting :f1 * model.lighting,
       lighting_external : f1*model.lighting_external/100,
       appliances : f1*model.appliances/100,
       space_heating : f1*model.space_heating/100,

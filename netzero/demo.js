@@ -177,3 +177,97 @@
           </Col>
         </Row></>
            : null }
+
+                 // const group = data.reduce((groups, item) => {
+            //   const group = (groups[item.lighting] || []);
+            //   group.push(item);
+            //   groups[item.lighting] = group;
+            //   return groups;
+            // }, {});
+
+            
+            let group = data.reduce((r, a) => {            
+              r[a.lighting] = [...r[a.lighting] || [], a];
+              return r;
+             }, {});
+
+                   // var helper = {};
+      // var result = data.reduce(function(r, o) {
+      //   var key = o.lighting;
+        
+      //   if(!helper[key]) {
+      //     helper[key] = Object.assign({}, o); // create a copy of o
+      //     r.push(helper[key]);
+      //   } else {
+      //     helper[key].lighting += o.lighting;
+      //     }
+      
+      //   return r;
+      // }, []);
+      //console.log(result)
+      // data.find(val=>{
+  
+      //   if(val.lighting === 0){
+      //     lighting.push(0)
+      //   }
+      //   if(val.lighting)
+      //   {          
+      //     lighting.push(val.lighting)
+      //   }
+        
+      // })
+//console.log(data)
+
+function groupBy(list, prop) {
+  return list.reduce((groupped, item) => {
+    var key = item[prop];
+    delete item[prop];
+    if (groupped.hasOwnProperty(key)) {
+      groupped[key].push(item);
+    } else {
+      groupped[key] = [item];
+    }
+    return groupped
+  }, {});
+}
+
+function groupSubKeys(obj, properties, propIndex) {
+  var grouppedObj = groupBy(obj, properties[propIndex]);
+  Object.keys(grouppedObj).forEach((key) => {
+    if (propIndex < properties.length - 2) {
+      grouppedObj[key] = groupSubKeys(grouppedObj[key], properties, propIndex + 1);
+    } else {
+      grouppedObj[key] = grouppedObj[key].map(item => item[properties[propIndex + 1]])
+    }
+  });
+  return grouppedObj;
+}
+
+function groupByProperties(list, properties) {
+  return groupSubKeys(list, properties, 0);
+}
+
+let asd = Object.values(data)
+let sums = asd.map(({key, values}) => {
+  return {
+    key,
+    values: values.reduce((sums, obj) => {
+      Object.keys(obj).forEach(k => sums[k] += obj[k] )
+      return sums
+    })
+  }
+})
+console.log(sums)
+
+{stackedData_.map((a)=>(
+  <>
+  <h6>{a.l}</h6>
+  {a.values.map(item => item.lighting).reduce((prev, curr) => prev + curr, 0)} 
+  {a.values.map((b)=>(
+    <> 
+    <p>{b.lighting}<br/></p>
+    </>
+  ))}
+  </>
+))}
+    

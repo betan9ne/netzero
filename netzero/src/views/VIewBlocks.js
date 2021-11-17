@@ -383,23 +383,17 @@ const VIewBlocks = props => {
             </Col>
             <Col></Col>
           </Row>
-          {/* <br/><br/>
-          <h6>Baseline emissions from all blocks in this precinct</h6>
-          {tag}
-           { tag === "Gas" ? <Bar data={gasdata_} options={options} /> :
-           <Bar data= {predata_} options={options}/> }
-   
-          <br/> */}
-        
-  
+
       <br/>
      
              </Col>
   
           <Col xs="2" style={{padding:"20px"}}>
-          {p &&   <>  <Button color="warning"><Link to={{pathname:"/viewPrecinct/"+p.id,state: p}} 
-          style={{color:"white", textDecoration:"none"}}>View Blocks</Link></Button><br/><br/>
-          <Button>Update Precinct</Button> </> }
+          <Button color="warning">
+                 <Link to={{pathname:"/setSites/"+b.id,state: b}} 
+                  style={{color:'white', textDecoration:"none"}}>Update Sites</Link>
+             </Button>
+         
           </Col>
                </Row>
            </Container>    
