@@ -304,11 +304,12 @@ const VIewBlocks = props => {
       
   
       const addprecinct = ()=>{
-          firebase.firestore().collection('precinct').add(
-              {precint: precint, 
-                  neighbourhood_id: data.id,
-                  neighbourhood_name: data.neighbourhood,
-              createdAt: new Date().toLocaleDateString()
+          firebase.firestore().collection('blocks').add(
+              {block: precint, 
+                precinct_id : data.id,
+                neighbourhood_id: data.neighbourhood_id,
+                createdAt: new Date().toLocaleDateString()
+              
               }).then((data)=>{
               toggle()
           }).catch((e)=>{
@@ -320,7 +321,7 @@ const VIewBlocks = props => {
       return (
           <div>
                 <Modal isOpen={modal} toggle={toggle}   external={externalCloseBtn}>
-          <ModalHeader>Add new precinct</ModalHeader>
+          <ModalHeader>Add new block</ModalHeader>
           <ModalBody>
           <Input type="text" required value={precint} onChange={e =>setprecint(e.target.value)} placeholder="precinct" />       
                </ModalBody>
@@ -332,7 +333,7 @@ const VIewBlocks = props => {
   
         <div style={{background:"#fdb940", padding:20}}>
                   <Row>
-                      <Col><h3 style={{color:"white"}}>Precincts</h3>
+                      <Col><h3 style={{color:"white"}}>Blocks</h3>
                       <h6 onClick={()=>history.goBack()} style={{cursor:"pointer"}}>{data.precint}</h6>
                       </Col>
                       <Col></Col>
@@ -344,12 +345,12 @@ const VIewBlocks = props => {
                    <Col xs="2" style={{padding:"20px"}}>
                   <Row>
                     <Col> <h6>List of Precincts</h6>
-                    <Button color="secondary" onClick={toggle}>Create precinct</Button></Col>
+                    <Button color="secondary" onClick={toggle}>Create block</Button></Col>
                      
                   </Row>
                   
                    <br/>
-                    {blocks_.length  === 0 ? <p>You have no precinct</p> : <>
+                    {blocks_.length  === 0 ? <p>You have no blocks</p> : <>
                       {blocks_.map((nb)=>(
                         <p onClick={()=>viewSiteInfo(nb)}  key={nb.id} style={{background:nb.id === b.id ? "#fdb940" : "#ffffff", 
                       border:"1px solid #000000", borderColor: "black",textAlign: "center",  padding:10, 

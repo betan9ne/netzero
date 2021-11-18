@@ -5,6 +5,7 @@ import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Container, Row, Col
 import useGetPrecinct from '../hooks/useGetPrecinct';
 import { Doughnut, Bar } from "react-chartjs-2";
 import BaselineEmissionsPieChart from '../charts/BaselineEmissionsPieChart';
+import BuildingsStackedChart from '../charts/BuildingsStackedChart';
 const ViewNeighbourhood = props => {
     let data = props.location.state
     let precinct = useGetPrecinct(data.id).docs
@@ -399,19 +400,11 @@ const getData = (_data) =>{
           <Col xs="12"><br/>  
            { tag === "Gas" ? <Bar data={gasdata_} options={options} /> :
          data_ ?  <Bar data= {data_} options={options}/>  : null}
-       
+         {/* {b && <BuildingsStackedChart data={b} /> }
+         {JSON.stringify(b)} */}
           </Col>
-          <Col></Col>
-        </Row>
-        {/* <br/><br/>
-        <h6>Baseline emissions from all blocks in this precinct</h6>
-        {tag}
-         { tag === "Gas" ? <Bar data={gasdata_} options={options} /> :
-         <Bar data= {predata_} options={options}/> }
- 
-        <br/> */}
-      
-
+          
+        </Row> 
     <br/>
    
            </Col>

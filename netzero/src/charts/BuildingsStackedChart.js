@@ -3,11 +3,11 @@ import React,{useState} from 'react'
 import { Bar } from "react-chartjs-2";
 import firebase from '../../src/firebase'
 import {Sum } from "react-lodash"
+
 const BuildingsStackedChart =({data}) => {
  
     let prop = data
-     const [docs, setdocs] = useState([])
-    const [labels, setlabels] = useState([])
+     const [labels, setlabels] = useState([])
     const [stackedData_, setstackedData] = useState([])
   const [lighting, setLighting] = useState([])
   const [lighting_external, setLightingExternal] = useState([])
@@ -17,44 +17,10 @@ const BuildingsStackedChart =({data}) => {
   const [space_heating, setSpaceHeating] = useState([])
   const [water_heating, setWaterHeating] = useState([])
 
-  let lightingObject = {
-    label : "lighting",
-    data : [1,2,3,4,5,6,7,2,4,6,8,9,1,3]
-  }
- let stackedObject = [
-   {
-     label : "lighting",
-     data : [1,2,3,4,5,6,7,2,4,6,8,9,1,3]
-   },
-   {
-    label : "lighting external",
-    data : [11,22,33,44,55,66,77,2,4,6,8,0,1,3]
-  },
-  {
-    label : "appliances",
-    data : [111,222,333,444,555,666,77,2,4,6,8,0,1,3]
-  },
-  {
-    label : "space heating",
-    data : [2,4,6,8,0,1,3, 2,4,6,8,0,1,3]
-  },
-  {
-    label : "cooling",
-    data : [1,3,5,7,9,6,4, 2,4,6,8,0,1,3]
-  },
-  {
-    label : "cooking",
-    data : [2,3,4,5,6,7,8, 2,4,6,8,0,1,3]
-  },
-  {
-    label : "water heating",
-    data : [9,8,7,6,5,4,3, 2,4,6,8,0,1,3]
-  }
-
- ]
-
+ 
      React.useEffect(()=>(
-    viewSiteInfo()
+          viewSiteInfo()
+           
         ),[data])
 
     const viewSiteInfo = () =>{
@@ -74,15 +40,24 @@ const BuildingsStackedChart =({data}) => {
         else r[l].values.push(e)
         return r
       }, {})
+      createStackData(Object.values(group))
           setlabels(Object.keys(group))
            setstackedData(Object.values(group))
-           createStackData()    
+            
             })
     }
     
   
 
-    const createStackData = () =>{
+    const createStackData = (data) =>{
+    //   setLighting([])
+  
+    //    setLightingExternal([])
+    //    setCooking([])
+    //   setCooling([])
+    //  setSpaceHeating([])
+    //    setWaterHeating([])
+    // setAppliances([])
     let lighting = []
     let lighting_external = []
     let cooking = []
@@ -91,43 +66,41 @@ const BuildingsStackedChart =({data}) => {
     let space_heating = []
     let appliances = []
       
-    stackedData_.map((a)=>{     
+    data.map((a)=>{     
          let asd = a.values.map(item => item.lighting).reduce((prev, curr) => prev + curr, 0)
          lighting.push(asd)   
     })
     setLighting(lighting)
-  
-    stackedData_.map((a)=>{     
+    data.map((a)=>{     
       let asd = a.values.map(item => item.lighting_external).reduce((prev, curr) => prev + curr, 0)
       lighting_external.push(asd)   
  })
  
- stackedData_.map((a)=>{     
+ data.map((a)=>{     
   let asd = a.values.map(item => item.cooking).reduce((prev, curr) => prev + curr, 0)
   cooking.push(asd)   
 })
  
-stackedData_.map((a)=>{     
+data.map((a)=>{     
   let asd = a.values.map(item => item.appliances).reduce((prev, curr) => prev + curr, 0)
   appliances.push(asd)   
 })
  
-stackedData_.map((a)=>{     
+data.map((a)=>{     
   let asd = a.values.map(item => item.cooling).reduce((prev, curr) => prev + curr, 0)
   cooling.push(asd)   
 })
 
-stackedData_.map((a)=>{     
+data.map((a)=>{     
   let asd = a.values.map(item => item.space_heating).reduce((prev, curr) => prev + curr, 0)
   space_heating.push(asd)   
 })
 
-stackedData_.map((a)=>{     
+data.map((a)=>{     
   let asd = a.values.map(item => item.water_heating).reduce((prev, curr) => prev + curr, 0)
   water_heating.push(asd)   
 }) 
-  
-  
+
        setLightingExternal(lighting_external)
        setCooking(cooking)
       setCooling(cooling)
@@ -135,9 +108,7 @@ stackedData_.map((a)=>{
        setWaterHeating(water_heating)
     setAppliances(appliances)
     }
- 
-    
- 
+  
     const stackedData = {
         labels: stackedData_.map((a)=>(
           a.l
@@ -146,8 +117,8 @@ stackedData_.map((a)=>{
          
           {
             label: 'Lighting',
-            data:  lighting.map((l)=>(
-              l
+            data:   lighting.map((l)=>(
+              l/100
             )),
             backgroundColor: 'rgba(255, 99, 132, 1)',
             borderWidth: 2,
@@ -189,7 +160,7 @@ stackedData_.map((a)=>{
             data: water_heating.map((a)=>(
               a
             )),
-            backgroundColor:   'rgba(255, 159, 64, 1)',
+            backgroundColor:   'rgba(55, 578, 64, 1)',
             borderWidth: 2,
           },
           {
@@ -199,10 +170,8 @@ stackedData_.map((a)=>{
             )),
             backgroundColor: 'rgba(255, 49, 86, 1)',
             borderWidth: 2,
-          },
-          
-         ],
-         
+          }, 
+         ], 
       };
       
       const stackedDataoptions = {
@@ -221,11 +190,21 @@ stackedData_.map((a)=>{
   
     return (
         <div style={{marginTop:"40px"}}>
+        {/* {stackedData_.map((a)=>(
+  <>
+  <h6>{a.l}</h6>
+  {a.values.map(item => item.lighting).reduce((prev, curr) => prev + curr, 0)} 
+  {a.values.map((b)=>(
+    <> 
+    <p>{b.lighting}<br/></p>
+    </>
+  ))}
+  </> 
+))} */}
+    
             <h6>Stationery Energy (Electricity) By End User</h6>
-             <Bar data={stackedData} options={stackedDataoptions} />
-
-  
-         
+           {stackedData_ && <Bar data={stackedData} options={stackedDataoptions} />}
+    
         </div>
     )
 }

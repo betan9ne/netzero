@@ -7,6 +7,7 @@ import { Doughnut, Bar } from "react-chartjs-2";
 import { FiLogOut, FiUser, FiUsers } from "react-icons/fi";
 import BuildingsStackedChart from '../charts/BuildingsStackedChart';
 import BaselineEmissionsPieChart from '../charts/BaselineEmissionsPieChart';
+import BuildingStackedChartInverted from '../charts/BuildingStackedChartInverted';
 
 function Neighbourhood() {
 
@@ -315,7 +316,7 @@ function Neighbourhood() {
            </> : 
            <div style={{display:"flex", flexDirection: "column"}}>
            {neighbourhoods.map((nb)=>(
-               <p onClick={()=>getPrecincts(nb)} style={{background:nb.id === b.id ? "#fdb940" : "#ffffff", 
+               <p onClick={()=>getPrecincts(nb)} key={nb.id} style={{background:nb.id === b.id ? "#fdb940" : "#ffffff", 
                     border:"1px solid #000000", borderColor: "black",textAlign: "center",  padding:10, 
                      borderRadius:10, fontSize:16, color:nb.id === b.id ? "white":"black", cursor: "pointer",fontWeight:"bold",
                       marginBottom:30 }}>
@@ -343,6 +344,7 @@ function Neighbourhood() {
           { tag === "Gas" ? <Bar data={gasdata_} options={options} /> :
          <Bar data= {data_} options={options}/> }
         {id && <BuildingsStackedChart data={id} /> }
+        {/* {id && <BuildingStackedChartInverted data={id} /> } */}
           </Col>
           <Col></Col>
         </Row>
@@ -358,14 +360,7 @@ function Neighbourhood() {
         </>
         }
         </Col>
-        {/* <Col xs="2" style={{padding:"20px"}}>
-        <h6>Precints</h6>
-       <br/>
-        {docs && docs.map((p)=>(
-            <p style={{ border:"1px solid #000000", borderColor: "black",textAlign: "center",  padding:10, 
-                     borderRadius:10,}}>{p.precint}</p>
-        ))}
-        </Col> */}
+       
 
     </Row>
 </Container>

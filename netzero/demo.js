@@ -270,4 +270,23 @@ console.log(sums)
   ))}
   </>
 ))}
+
+  //   let values = Object.values(group)
+    //   values.forEach(element=>{
+    //       if(element.values[0].lighting === 0){              
+    //             let asd = {
+    //                 model: element.l,
+    //                 data: 0
+    //             }
+    //             lighting.push(asd)
+    //       }
+    //       else{
+    //         let asd = {
+    //             model: element.l,
+    //             data:  element.values[0].lighting
+    //         }
+    //         lighting.push(asd)
+           
+    //       }
+    //   })
     

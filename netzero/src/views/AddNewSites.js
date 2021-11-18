@@ -267,7 +267,7 @@ else if(model.tag === "Residential Pools")
                     <div style={{display:"grid", gridTemplateColumns:"1fr 1fr 1fr 1fr", gap:"20px" }}>
                     {sites.map((a)=>(
                         <div style={{background:"#efefef", padding:"10px", borderRadius:"15px"}}>
-                        <p>{a.model}</p>
+                        <p style={{margin:"0"}}>{a.model}</p>
                          <b>{a.scopeValue}</b>
                         </div>
                     ))}
