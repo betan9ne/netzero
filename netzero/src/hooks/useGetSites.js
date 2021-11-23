@@ -14,7 +14,13 @@ const useGetSites = (id) => {
               }
               neighbourhood.push(nb)
             })
-            setdocs(neighbourhood)
+            function SortArray(x, y){
+              if (x.model < y.model) {return -1;}
+              if (x.model > y.model) {return 1;}
+              return 0;
+          }
+          var s = neighbourhood.sort(SortArray);
+            setdocs(s)
          })
     }, [])
     return {docs}

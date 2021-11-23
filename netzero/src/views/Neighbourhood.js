@@ -294,24 +294,32 @@ function Neighbourhood() {
           <Button color="primary" onClick={addneighbourhood}>Confirm</Button>{' '}
           </ModalFooter>
       </Modal>
-            <div style={{background:"#fdb940", padding:20}}>
-                <Row>
-                    <Col><h3 style={{color:"white"}}>Neighbourhoods</h3></Col>
 
-                    <Col style={{display:'flex', justifyContent:'flex-end'}}>                     
-                    <Button color="info" onClick={toggle}>Create neighbourhood</Button>
-                   
-                    <Button color="warning"  style={{marginLeft:20 }}onClick={()=>history.push("CreateUser")}> <FiUsers size={30} color="white"/></Button>
-                    <Button color="warning"  style={{marginLeft:20 }}onClick={()=>logout()}><FiLogOut  size={30} color="white"/></Button>
+            <div style={{background:"#fdb940", position:"fixed", left:0, right:0, top:0, zIndex:10000, padding:5}}>
+                <Row>
+                    <Col><h4 style={{color:"white"}}>Neighbourhoods</h4></Col>
+
+                    <Col style={{display:'flex', justifyContent:'flex-end'}}>    
+                    {id && 
+        <>
+          <Button color="warning">
+          <Link to={{pathname:"/viewNeighbourhood/"+id.id,state: id}} style={{color:"white", textDecoration:"none"}}>View Precincts</Link>
+          </Button><br/><br/>
+        <Button>Update</Button>
+        </>
+        }                 
+                       <Button color="warning"  style={{marginLeft:20 }}onClick={()=>history.push("CreateUser")}> <FiUsers size={24} color="white"/></Button>
+                    <Button color="warning"  style={{marginLeft:20 }}onClick={()=>logout()}><FiLogOut  size={24} color="white"/></Button>
                     
                     </Col>
                     </Row>           
             </div>
             
-<Container style={{maxWidth:"100%"}}>
+<Container style={{maxWidth:"100%", marginTop:"70px"}}>
     <Row>
-        <Col xs="2" style={{padding:"20px"}}> <h6>List of neighbourhoods</h6><br/>
-           
+        <Col xs="2" > <h6>List of neighbourhoods</h6><br/>
+        <Button color="secondary" onClick={toggle}>Create neighbourhood</Button>
+        <br/><br/>
            {neighbourhoods.length  === 0 ? <><p>You have no neighbourhoods</p>     
            </> : 
            <div style={{display:"flex", flexDirection: "column"}}>
@@ -325,13 +333,19 @@ function Neighbourhood() {
            ))}
            </div>
            }</Col>
-        <Col xs="8" style={{padding:"40px"}}>
-           {docs && 
-           <BaselineEmissionsPieChart data={docs} />}
+        <Col xs="10" style={{ }}>
         
-<br/><br/>
-        {id && 
-          <div style={{display:"flex", marginBottom:20, justifyContent:"center"}}>
+        <Row>
+          <Col xs="12">
+          
+          {docs.length === 0 ? <h6>Select a neighbourhood to show details</h6> :  <BaselineEmissionsPieChart data={docs} />}
+ <br/><br/>
+         
+        <Row>
+          <Col xs="8">
+          {id && 
+          <div style={{display:"flex", marginBottom:20,}}>
+          
         <ButtonGroup>
          <Button color="warning" style={{color:"white"}} onClick={()=>viewSiteInfo(id,"Buildings")}>Stationary Energy (Electricity)</Button>
          <Button color="warning" style={{color:"white"}}  onClick={()=>viewSiteInfo(id,"Transport")}>Transport Emissions</Button>
@@ -339,29 +353,52 @@ function Neighbourhood() {
           </ButtonGroup>
         </div>
         }
-        <Row>
-          <Col xs="12"><br/>  
-          { tag === "Gas" ? <Bar data={gasdata_} options={options} /> :
-         <Bar data= {data_} options={options}/> }
-        {id && <BuildingsStackedChart data={id} /> }
-        {/* {id && <BuildingStackedChartInverted data={id} /> } */}
-          </Col>
-          <Col></Col>
+          { tag === "Gas" ? gasData.length === 0 ? null : <Bar data={gasdata_} options={options} /> : _data.length === 0 ? null : <Bar data= {data_} options={options}/> }
+           </Col>
+          <Col xs="4">
+            <h6>Input Summary</h6>
+            {tag === "Gas" ? 
+            gasData.map((a, index)=>(
+              <p style={{borderBottom: "thin solid #999"}}>
+                <span style={{fontWeight:"bold", fontSize:"12px"}}>
+              {a.label}
+              </span>
+              <br/>
+              <span style={{fontSize:"14px"}}>{a.data/1000}</span>
+              </p>
+            ))
+             :
+          <>
+            <Row>
+              <Col xs="9">
+            {labels.map((a, index)=>(
+              <p style={{borderBottom: "thin solid #999"}}>
+                <span style={{fontWeight:"bold", fontSize:"12px"}}>
+              {a}
+              </span></p>        
+            ))}</Col>
+              <Col xs="3">                
+            {_data.map((a, index)=>(
+              <p style={{borderBottom: "thin solid #999"}}>
+                <span style={{fontWeight:"bold", fontSize:"12px"}}>
+              {a}
+              </span></p>     
+            ))}
+              </Col>
+            </Row>
+            </>
+            }
+        </Col>
+        </Row>
+       <Row>
+         <Col xs="12"> {id && <BuildingsStackedChart data={id} /> }
+        {id && <BuildingStackedChartInverted data={id} /> }</Col>
+        
+       </Row>
+          </Col> 
         </Row>
        
         </Col>
-        <Col xs="2" style={{padding:"20px"}}>
-        {id && 
-        <>
-          <Button color="warning">
-          <Link to={{pathname:"/viewNeighbourhood/"+id.id,state: id}} style={{color:"white", textDecoration:"none"}}>View Precincts</Link>
-          </Button><br/><br/>
-        <Button>Update</Button>
-        </>
-        }
-        </Col>
-       
-
     </Row>
 </Container>
            

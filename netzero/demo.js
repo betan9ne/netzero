@@ -290,3 +290,10 @@ console.log(sums)
     //       }
     //   })
     
+    {lighting : val.lighting},
+    {lighting_external : val.lighting_external},
+    {appliances : val.appliances},
+    {cooling : val.cooling},
+    {cooking : val.cooking},
+    {space_heating : val.space_heating},
+    {water_heating : val.water_heating}

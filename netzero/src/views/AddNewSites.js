@@ -18,7 +18,7 @@ const  AddNewSites = props => {
    
 useEffect(() => {
     getModels()
-  
+    
 }, [])
 
 const enableDisable = (id) =>{    
@@ -259,8 +259,7 @@ else if(model.tag === "Residential Pools")
                      </>
                     )
                 )}
-            <br/><br/>
-            
+           
                     </Col>
 
                     <Col xs="6"><br/> <h6>Site Summary</h6><br/>

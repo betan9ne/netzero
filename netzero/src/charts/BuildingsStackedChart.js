@@ -1,8 +1,7 @@
-import { element, objectOf } from 'prop-types';
 import React,{useState} from 'react'
 import { Bar } from "react-chartjs-2";
 import firebase from '../../src/firebase'
-import {Sum } from "react-lodash"
+import { Col, Row, } from 'reactstrap';
 
 const BuildingsStackedChart =({data}) => {
  
@@ -160,7 +159,7 @@ data.map((a)=>{
             data: water_heating.map((a)=>(
               a
             )),
-            backgroundColor:   'rgba(55, 578, 64, 1)',
+            backgroundColor:   'rgba(255, 223, 999, 1)',
             borderWidth: 2,
           },
           {
@@ -185,25 +184,38 @@ data.map((a)=>{
           x: {
             stacked: true
           }
-        }
+        },
+        plugins: {
+          legend: {
+              display: true,
+           position:'right'
+          }
+      }
       };
   
     return (
         <div style={{marginTop:"40px"}}>
-        {/* {stackedData_.map((a)=>(
+       
+    <Row>
+      <Col xs="8">
+      <h6>Stationery Energy (Electricity) By Building Type</h6>
+           {stackedData_ && <Bar data={stackedData} options={stackedDataoptions} />}
+      </Col>
+      <Col style={{display:"grid", gridTemplateColumns:"1fr 1fr"}}>
+      {/* {stackedData_.map((a)=>(
   <>
-  <h6>{a.l}</h6>
-  {a.values.map(item => item.lighting).reduce((prev, curr) => prev + curr, 0)} 
-  {a.values.map((b)=>(
-    <> 
-    <p>{b.lighting}<br/></p>
-    </>
-  ))}
+  <p style={{borderBottom: "thin solid #999", width:"100%"}}>
+                <span style={{fontWeight:"bold", fontSize:"12px"}}>
+              {a.l}
+              </span><br/>
+              <span style={{textAlign:"right"}}>{a.values.map(item => parseInt(item.scopeValue)).reduce((prev, curr) => prev + curr, 0)} 
+              </span>
+              </p>     
   </> 
 ))} */}
-    
-            <h6>Stationery Energy (Electricity) By End User</h6>
-           {stackedData_ && <Bar data={stackedData} options={stackedDataoptions} />}
+      </Col>
+    </Row>
+          
     
         </div>
     )

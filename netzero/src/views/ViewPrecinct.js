@@ -482,9 +482,9 @@ const ViewPrecinct = props => {
         </ModalFooter>
       </Modal>
    
-      <div style={{background:"#fdb940", padding:20}}>
+      <div style={{background:"#fdb940", padding:5}}>
                 <Row>
-                    <Col><h3 style={{color:"white"}}>Blocks</h3>
+                    <Col><h5 style={{color:"white"}}>Blocks</h5>
                     <h6 onClick={()=>history.goBack()} style={{cursor:"pointer"}}>{data.precint}</h6></Col>
                     <Col style={{display:"flex", justifyContent:"flex-end", alignSelf:"flex-end"}}> 
                  </Col>

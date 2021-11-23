@@ -351,9 +351,9 @@ const getData = (_data) =>{
         </ModalFooter>
       </Modal>
 
-      <div style={{background:"#fdb940", padding:20}}>
+      <div style={{background:"#fdb940", padding:5}}>
                 <Row>
-                    <Col><h3 style={{color:"white"}}>Precincts</h3>
+                    <Col><h4 style={{color:"white"}}>Precincts</h4>
                     <h6 onClick={()=>history.goBack()} style={{cursor:"pointer"}}>{data.neighbourhood}</h6>
                     </Col>
                     <Col></Col>
@@ -382,7 +382,7 @@ const getData = (_data) =>{
                  </> }</Col>
  
                  <Col xs="8"   style={{padding:"40px"}}>
-                 {p &&  <BaselineEmissionsPieChart data={docs} />}
+                 {docs.length === 0 ? <h6>Select a Precinct to show details</h6> :   <BaselineEmissionsPieChart data={docs} />}
 <br/><br/>
         {p &&
         <>
@@ -398,8 +398,7 @@ const getData = (_data) =>{
 
         <Row>
           <Col xs="12"><br/>  
-           { tag === "Gas" ? <Bar data={gasdata_} options={options} /> :
-         data_ ?  <Bar data= {data_} options={options}/>  : null}
+          { tag === "Gas" ? gasData.length === 0 ? null : <Bar data={gasdata_} options={options} /> : _data.length === 0 ? null : <Bar data= {data_} options={options}/> }
          {/* {b && <BuildingsStackedChart data={b} /> }
          {JSON.stringify(b)} */}
           </Col>

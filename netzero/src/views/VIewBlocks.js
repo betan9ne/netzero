@@ -194,8 +194,9 @@ const VIewBlocks = props => {
         return a + parseInt(b['scopeValue']);
     }, 0);
     data.push(asd) 
+    
     })
-  
+    console.log(_data)
     setdata_(data)            
     setlabels(label)
   }
@@ -331,9 +332,9 @@ const VIewBlocks = props => {
           </ModalFooter>
         </Modal>
   
-        <div style={{background:"#fdb940", padding:20}}>
+        <div style={{background:"#fdb940", padding:5}}>
                   <Row>
-                      <Col><h3 style={{color:"white"}}>Blocks</h3>
+                      <Col><h5 style={{color:"white"}}>Blocks</h5>
                       <h6 onClick={()=>history.goBack()} style={{cursor:"pointer"}}>{data.precint}</h6>
                       </Col>
                       <Col></Col>
@@ -362,7 +363,7 @@ const VIewBlocks = props => {
                    </> }</Col>
    
                    <Col xs="8"   style={{padding:"40px"}}>
-                   {p &&  <BaselineEmissionsPieChart data={docs} />}
+                   {docs.length === 0 ? <h6>Select a block to show details</h6> :  <BaselineEmissionsPieChart data={docs} />}
   <br/><br/>
           {p &&
           <>
@@ -378,8 +379,10 @@ const VIewBlocks = props => {
   
           <Row>
             <Col xs="12"><br/>  
-             { tag === "Gas" ? <Bar data={gasdata_} options={options} /> :
-           data_ ?  <Bar data= {data_} options={options}/>  : null}
+            { tag === "Gas" 
+            ? gasData.length === 0 
+            ? null : <Bar data={gasdata_} options={options} />
+             : _data.length === 0 ? null : <Bar data= {data_} options={options}/> }
          
             </Col>
             <Col></Col>

@@ -59,11 +59,11 @@ const BaselineEmissionsPieChart =({data})=> {
       
           let scopeData = [
             {
-              label : "Scope 1",
+              label : "Scope 2",
               data : energy + infrastructure
             },
             {
-              label : "Scope 2",
+              label : "Scope 1",
               data : gas + transport
             }
           ]     
@@ -81,7 +81,7 @@ const BaselineEmissionsPieChart =({data})=> {
           {
             label: '',
             data: baselineEmissions.map((a)=>(
-              a.data
+              a.data/1000
             )),
             backgroundColor: [
               'rgba(255, 99, 132, 0.5)',
@@ -93,7 +93,16 @@ const BaselineEmissionsPieChart =({data})=> {
             ],
             borderWidth: 1,
           },
+  
         ],
+        options: {
+          plugins : {
+            legend: {
+              display: true,
+           position:'right'
+          }
+          }          
+      }
       };
 
       
@@ -105,7 +114,7 @@ const BaselineEmissionsPieChart =({data})=> {
           {
             label: '',
             data: graphSummaries.map((a)=>(
-              a.data
+              a.data/1000
             )),
             backgroundColor: [
               'rgba(255, 99, 132, 0.5)',
@@ -122,10 +131,38 @@ const BaselineEmissionsPieChart =({data})=> {
 
     return (
         <div style={{display:"flex",justifyContent:"center"}}>
-             <Row>
-          <Col xs="6"><Doughnut data={scopeData} /></Col>
-          <Col xs="6"><Doughnut data={baseline} /></Col>
-        </Row>
+              
+          <Col xs="8">
+          <Row>
+            <Col xs="6"><Doughnut data={scopeData} /></Col>
+            <Col xs="6"><Doughnut data={baseline} /></Col>
+          </Row>
+          </Col>
+          <Col xs="4">
+          <p>Output Summary</p>
+            {graphSummaries.map((a, index)=>(
+              <p style={{borderBottom: "thin solid #999"}}>
+                <span style={{fontWeight:"bold", fontSize:"12px"}}>
+              {a.label}
+              </span>
+              <br/>
+              <span style={{fontSize:"14px"}}>{(a.data/1000).toFixed(2)}</span>
+              </p>
+            ))}
+
+            <p>Baseline Input summary</p>
+            {baselineEmissions.map((a, index)=>(
+              <p style={{borderBottom: "thin solid #999"}}>
+                <span style={{fontWeight:"bold", fontSize:"12px"}}>
+              {a.label}
+              </span>
+              <br/>
+              <span style={{fontSize:"14px"}}>{(a.data/1000).toFixed(2)}</span>
+              </p>
+            ))}
+
+          </Col>
+       
         </div>
     )
 }
