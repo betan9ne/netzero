@@ -5,8 +5,7 @@ import { Col, Row, } from 'reactstrap';
 const BuildingStackedChartInverted = ({data}) => {
 
     let prop = data
-     
-    const [stackedData_, setstackedData] = useState([])
+      const [stackedData_, setstackedData] = useState([])
     const [Religous, setReligous] = useState([])
     const [Education, setEducation] = useState([])
    const [Government, setGovernment] = useState([])
@@ -26,9 +25,30 @@ const BuildingStackedChartInverted = ({data}) => {
  
 let labels = ["Lighting", "Lighting External", "Appliances", "Space Heating", "Cooling", "Water Heating", "Cooking"]
  
-     React.useEffect(()=>(
-    viewSiteInfo()
-        ),[data])
+React.useEffect(()=>(
+  data.tag === "block"
+  ? viewSiteInfo2():
+     viewSiteInfo()
+
+      
+   ),[data])
+
+   const viewSiteInfo2 = () =>{
+    let data = [];
+    firebase.firestore().collection("sites").where("neighbourhood_id","==", prop.data.neighbourhood_id).where("model_tag","==", "Buildings").get().then((doc)=>{        
+       doc.docs.forEach(document => {
+         const nb = {
+           id: document.id,
+           ...document.data()
+         }
+         data.push(nb)
+       }) 
+       getMe(data)
+       setdocs(data)
+     //   setstackedData(Object.values(group))
+    createStackData(data)    
+       })
+} 
 
     const viewSiteInfo = () =>{
          let data = [];

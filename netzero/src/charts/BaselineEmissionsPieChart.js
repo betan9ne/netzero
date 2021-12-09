@@ -149,9 +149,8 @@ const BaselineEmissionsPieChart =({data})=> {
               <span style={{fontSize:"14px"}}>{(a.data/1000).toFixed(2)}</span>
               </p>
             ))}
-
-            <p>Baseline Input summary</p>
-            {baselineEmissions.map((a, index)=>(
+<br/><br/>
+             {baselineEmissions.map((a, index)=>(
               <p style={{borderBottom: "thin solid #999"}}>
                 <span style={{fontWeight:"bold", fontSize:"12px"}}>
               {a.label}

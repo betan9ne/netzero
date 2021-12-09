@@ -18,13 +18,45 @@ const BuildingsStackedChart =({data}) => {
 
  
      React.useEffect(()=>(
+       data.tag === "block"
+       ? viewSiteInfo2():
           viewSiteInfo()
+
            
         ),[data])
 
+        const viewSiteInfo2 = () =>{
+          let data = [];
+  
+  
+           firebase.firestore().collection("sites").where("neighbourhood_id","==", prop.data.neighbourhood_id).where("model_tag","==", "Buildings").get().then((doc)=>{        
+              doc.docs.forEach(document => {
+                const nb = {
+                  id: document.id,
+                  ...document.data()
+                }
+                data.push(nb)
+              }) 
+       
+        let group =  data.reduce((r, e) =>{
+          let l =  e.model
+          if(!r[l])r[l] = {l, values:[e]}
+          else r[l].values.push(e)
+          return r
+        }, {})
+        createStackData(Object.values(group))
+            setlabels(Object.keys(group))
+             setstackedData(Object.values(group))
+              
+              })
+      }
+
+
     const viewSiteInfo = () =>{
         let data = [];
-         firebase.firestore().collection("sites").where("neighbourhood_id","==", prop.id).where("model_tag","==", "Buildings").get().then((doc)=>{        
+
+
+         firebase.firestore().collection("sites").where("neighbourhood_id","==", prop.data.id).where("model_tag","==", "Buildings").get().then((doc)=>{        
             doc.docs.forEach(document => {
               const nb = {
                 id: document.id,

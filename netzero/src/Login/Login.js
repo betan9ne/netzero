@@ -37,9 +37,10 @@ function Login() {
         <p>{errorMsg}</p>
         <Label for="exampleEmail">Email</Label>
         <Input type="email" name="email" id="email" required value={email} onChange={e =>setemail(e.target.value)} placeholder="Email" /><br/>
+        <Label for="exampleEmail">Password</Label>
         <Input type="password" name="password" required value={password} onChange={e =>setpassword(e.target.value)} id="password" placeholder="Password" />
-   <p>Forgot password</p>
-   <Button color="danger" onClick={()=>signin()}>Sign in</Button></div>
+   
+   <Button color="danger" style={{marginTop:"20px"}} onClick={()=>signin()}>Sign in</Button></div>
    {/* <Link to={"/Neighbourhood"}>Sign in</Link> */}
         </Col>
       </Row>

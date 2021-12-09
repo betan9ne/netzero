@@ -1,39 +1,13 @@
-[debug] [2021-11-22T20:26:28.824Z] ----------------------------------------------------------------------
-[debug] [2021-11-22T20:26:28.826Z] Command:       C:\Program Files\nodejs\node.exe C:\Users\chiso\AppData\Roaming\npm\node_modules\firebase-tools\lib\bin\firebase.js deploy
-[debug] [2021-11-22T20:26:28.826Z] CLI Version:   9.21.0
-[debug] [2021-11-22T20:26:28.826Z] Platform:      win32
-[debug] [2021-11-22T20:26:28.826Z] Node Version:  v14.18.1
-[debug] [2021-11-22T20:26:28.830Z] Time:          Mon Nov 22 2021 22:26:28 GMT+0200 (South Africa Standard Time)
-[debug] [2021-11-22T20:26:28.831Z] ----------------------------------------------------------------------
+[debug] [2021-12-09T13:38:53.025Z] ----------------------------------------------------------------------
+[debug] [2021-12-09T13:38:53.026Z] Command:       C:\Program Files\nodejs\node.exe C:\Users\chiso\AppData\Roaming\npm\node_modules\firebase-tools\lib\bin\firebase.js deploy
+[debug] [2021-12-09T13:38:53.026Z] CLI Version:   9.21.0
+[debug] [2021-12-09T13:38:53.026Z] Platform:      win32
+[debug] [2021-12-09T13:38:53.027Z] Node Version:  v14.18.1
+[debug] [2021-12-09T13:38:53.027Z] Time:          Thu Dec 09 2021 15:38:53 GMT+0200 (South Africa Standard Time)
+[debug] [2021-12-09T13:38:53.027Z] ----------------------------------------------------------------------
 [debug] 
-[debug] [2021-11-22T20:26:28.903Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
-[debug] [2021-11-22T20:26:28.904Z] > authorizing via signed-in user (nextradium@gmail.com)
-[debug] [2021-11-22T20:26:28.904Z] [iam] checking project netzero-a417f for permissions ["datastore.indexes.create","datastore.indexes.delete","datastore.indexes.list","datastore.indexes.update","firebase.projects.get","firebasehosting.sites.update","firebaserules.releases.create","firebaserules.releases.update","firebaserules.rulesets.create"]
-[debug] [2021-11-22T20:26:28.906Z] > refreshing access token with scopes: ["email","https://www.googleapis.com/auth/cloud-platform","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","openid"]
-[debug] [2021-11-22T20:26:28.906Z] >>> HTTP REQUEST POST https://www.googleapis.com/oauth2/v3/token  
- <request body omitted>
-[debug] [2021-11-22T20:26:59.827Z] [iam] error while checking permissions, command may fail: FirebaseError: Authentication Error: Your credentials are no longer valid. Please run firebase login --reauth
-
-For CI servers and headless environments, generate a new token with firebase login:ci
-[debug] [2021-11-22T20:26:59.831Z] > refreshing access token with scopes: []
-[debug] [2021-11-22T20:26:59.832Z] >>> HTTP REQUEST POST https://www.googleapis.com/oauth2/v3/token  
- <request body omitted>
-[debug] [2021-11-22T20:27:55.358Z] Authentication Error: Your credentials are no longer valid. Please run firebase login --reauth
-
-For CI servers and headless environments, generate a new token with firebase login:ci
-[debug] [2021-11-22T20:27:55.360Z] FirebaseError: Authentication Error: Your credentials are no longer valid. Please run firebase login --reauth
-
-For CI servers and headless environments, generate a new token with firebase login:ci
-    at invalidCredentialError (C:\Users\chiso\AppData\Roaming\npm\node_modules\firebase-tools\lib\auth.js:141:12)
-    at refreshTokens (C:\Users\chiso\AppData\Roaming\npm\node_modules\firebase-tools\lib\auth.js:448:15)
-    at processTicksAndRejections (internal/process/task_queues.js:95:5)
-    at async Client.getAccessToken (C:\Users\chiso\AppData\Roaming\npm\node_modules\firebase-tools\lib\apiv2.js:146:23)
-    at async Client.addAuthHeader (C:\Users\chiso\AppData\Roaming\npm\node_modules\firebase-tools\lib\apiv2.js:137:21)
-    at async Client.request (C:\Users\chiso\AppData\Roaming\npm\node_modules\firebase-tools\lib\apiv2.js:93:34)
-    at async Object.getFirebaseProject (C:\Users\chiso\AppData\Roaming\npm\node_modules\firebase-tools\lib\management\projects.js:290:21)
-    at async Object.getDefaultHostingSite (C:\Users\chiso\AppData\Roaming\npm\node_modules\firebase-tools\lib\getDefaultHostingSite.js:8:21)
-    at async requireHostingSite (C:\Users\chiso\AppData\Roaming\npm\node_modules\firebase-tools\lib\requireHostingSite.js:9:18)
-    at async Object.fn (C:\Users\chiso\AppData\Roaming\npm\node_modules\firebase-tools\lib\commands\deploy.js:65:9)
-    at async C:\Users\chiso\AppData\Roaming\npm\node_modules\firebase-tools\lib\command.js:188:17
-[error] 
-[error] Error: Failed to get Firebase project netzero-a417f. Please make sure the project exists and your account has permission to access it.
+[debug] [2021-12-09T13:38:53.068Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2021-12-09T13:38:53.068Z] > authorizing via signed-in user (nextradium@gmail.com)
+[debug] [2021-12-09T13:38:53.068Z] [iam] checking project netzero-a417f for permissions ["datastore.indexes.create","datastore.indexes.delete","datastore.indexes.list","datastore.indexes.update","firebase.projects.get","firebasehosting.sites.update","firebaserules.releases.create","firebaserules.releases.update","firebaserules.rulesets.create"]
+[debug] [2021-12-09T13:38:53.069Z] >>> HTTP REQUEST POST https://cloudresourcemanager.googleapis.com/v1/projects/netzero-a417f:testIamPermissions  
+ {"permissions":["datastore.indexes.create","datastore.indexes.delete","datastore.indexes.list","datastore.indexes.update","firebase.projects.get","firebasehosting.sites.update","firebaserules.releases.create","firebaserules.releases.update","firebaserules.rulesets.create"]}

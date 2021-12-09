@@ -6,6 +6,7 @@ import useGetPrecinct from '../hooks/useGetPrecinct';
 import { Doughnut, Bar } from "react-chartjs-2";
 import BaselineEmissionsPieChart from '../charts/BaselineEmissionsPieChart';
 import BuildingsStackedChart from '../charts/BuildingsStackedChart';
+import BuildingStackedChartInverted from '../charts/BuildingStackedChartInverted';
 const ViewNeighbourhood = props => {
     let data = props.location.state
     let precinct = useGetPrecinct(data.id).docs
@@ -25,9 +26,7 @@ const ViewNeighbourhood = props => {
 
 
   let history = useHistory()
-
-
-    
+ 
   const predata_ = {
     labels:labels,
     datasets: [
@@ -405,7 +404,16 @@ const getData = (_data) =>{
           
         </Row> 
     <br/>
-   
+    <Row>
+      {tag === "Buildings" ? <>   
+      <Col xs="12"> 
+      {data && <BuildingsStackedChart data={{data: data, tag: "precinct"}} /> }
+        {data && <BuildingStackedChartInverted data={data} /> }
+        </Col>
+        </> : null }
+       
+        
+       </Row>
            </Col>
 
         <Col xs="2" style={{padding:"20px"}}>

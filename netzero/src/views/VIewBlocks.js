@@ -5,6 +5,8 @@ import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Container, Row, Col
 import useGetBlocks from '../hooks/useGetBlocks';
 import { Doughnut, Bar } from "react-chartjs-2";
 import BaselineEmissionsPieChart from '../charts/BaselineEmissionsPieChart';
+import BuildingsStackedChart from '../charts/BuildingsStackedChart';
+import BuildingStackedChartInverted from '../charts/BuildingStackedChartInverted';
 
 const VIewBlocks = props => {
 
@@ -140,7 +142,7 @@ const VIewBlocks = props => {
                  }
                })
    
-               console.log(buildings)
+            //   console.log(buildings)
               
                  getGasData(neighbourhood)
                 
@@ -196,7 +198,7 @@ const VIewBlocks = props => {
     data.push(asd) 
     
     })
-    console.log(_data)
+  //  console.log(_data)
     setdata_(data)            
     setlabels(label)
   }
@@ -385,13 +387,19 @@ const VIewBlocks = props => {
              : _data.length === 0 ? null : <Bar data= {data_} options={options}/> }
          
             </Col>
-            <Col></Col>
+          
           </Row>
-
-      <br/>
-     
+          <Row>
+      {tag === "Buildings" ? <>   
+      <Col xs="12"> 
+      {data && <BuildingsStackedChart data={{data: data, tag: "block"}} /> }
+        {data && <BuildingStackedChartInverted data={{data: data, tag: "block"}} /> }
+        </Col>
+        </> : null }
+       </Row>
+    
              </Col>
-  
+    
           <Col xs="2" style={{padding:"20px"}}>
           <Button color="warning">
                  <Link to={{pathname:"/setSites/"+b.id,state: b}} 

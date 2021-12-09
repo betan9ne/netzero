@@ -8,6 +8,7 @@ import { FiLogOut, FiUser, FiUsers } from "react-icons/fi";
 import BuildingsStackedChart from '../charts/BuildingsStackedChart';
 import BaselineEmissionsPieChart from '../charts/BaselineEmissionsPieChart';
 import BuildingStackedChartInverted from '../charts/BuildingStackedChartInverted';
+import Inputs from './Inputs';
 
 function Neighbourhood() {
 
@@ -23,12 +24,14 @@ function Neighbourhood() {
     const [graphSummaries, setgraphSummaries] = useState([])
     const [id, setid] = useState(null)
     const [_data, setdata_] = useState([])
-
+    const [currentTab, setcurrentTab] = useState(0)
+    let asd=[]
     const [b, setb] = useState([])
 
     const logout = ()=>{
         firebase.auth().signOut().then(() => {
         history.push("/")
+        window.location.reload()
           }).catch((error) => {
             alert(error)
           });
@@ -48,15 +51,7 @@ function Neighbourhood() {
        
      })
     }
-    
-    let infrastructure = 0
-    let transport = 0
-    let energy = 0
-    let gas = 0
-
-   
-
-
+  
     const viewSiteInfo = (nb, tag) =>{
       
       settag(tag)
@@ -65,37 +60,30 @@ function Neighbourhood() {
         getPrecinctData(nb.id)
         setb(nb)
          firebase.firestore().collection("sites").where("neighbourhood_id","==", nb.id).get().then((doc)=>{
-        
-            doc.docs.forEach(document => {
+             doc.docs.forEach(document => {
               const nb = {
                 id: document.id,
                 ...document.data()
               }
               neighbourhood.push(nb)
             })
-           
-            //get buildings data
-            neighbourhood.filter((val)=>{
+                 neighbourhood.filter((val)=>{
               if(val.model_tag === tag)
               {
                 buildings.push(val)
               }
             })
-          //  setdocs(transport)
-           
-              getGasData(neighbourhood)
+               getGasData(neighbourhood)
              
            let group = buildings.reduce((r, a) => {
             r[a.model] = [...r[a.model] || [], a];
          return r;
         }, {});           
         
-      let asd = Object.entries(group)
+       asd = Object.entries(group)
 
            getDataandLabels(asd)
-     //       console.log(result)
-        //       setfilter(filter_)
-                    })
+                      })
     }
 
 
@@ -271,7 +259,7 @@ function Neighbourhood() {
       ],
     };
     const addneighbourhood = ()=>{
-        firebase.firestore().collection('neighbourhood').add({neighbourhood: neighbourhood, createdAt: new Date().toLocaleDateString()}).then((data)=>{
+        firebase.firestore().collection('neighbourhood').add({neighbourhood: neighbourhood, status:true, createdAt: new Date().toLocaleDateString()}).then((data)=>{
             toggle()
         }).catch((e)=>{
             alert(JSON.stringify(e))
@@ -281,6 +269,11 @@ function Neighbourhood() {
       const toggle = () => setModal(!modal);
   
     const externalCloseBtn = <button className="close" style={{ position: 'absolute', top: '15px', right: '15px' }} onClick={toggle}>&times;</button>;
+
+    const showTab = (tag) =>{
+      setcurrentTab(tag)
+    }
+
 
     return (
         <div>
@@ -338,25 +331,41 @@ function Neighbourhood() {
         <Row>
           <Col xs="12">
           
-          {docs.length === 0 ? <h6>Select a neighbourhood to show details</h6> :  <BaselineEmissionsPieChart data={docs} />}
+          {docs.length === 0 ? <h6>Select a neighbourhood to show details</h6> : 
+          <>
+          <div style={{display:"flex", marginTop:"20px", marginBottom:"20px", justifyContent:"center"}}>
+          <ButtonGroup style={{width:"50%"}}>
+            <Button  color="warning" onClick={()=>showTab(0)} style={{color:"white", width:"50%"}}>Outputs</Button>
+            <Button  color="warning" onClick={()=>showTab(1)} style={{color:"white", width:"50%"}}>Inputs</Button>
+          </ButtonGroup>
+          </div> 
+
+        
+          </>
+          }
  <br/><br/>
-         
+         {currentTab === 0 ? 
+         <>
+        {id && <BaselineEmissionsPieChart data={docs} /> }
         <Row>
           <Col xs="8">
+          <br/><br/>
           {id && 
-          <div style={{display:"flex", marginBottom:20,}}>
-          
+          <div style={{display:"flex", justifyContent:"center", marginBottom:20,}}>
+         
         <ButtonGroup>
-         <Button color="warning" style={{color:"white"}} onClick={()=>viewSiteInfo(id,"Buildings")}>Stationary Energy (Electricity)</Button>
-         <Button color="warning" style={{color:"white"}}  onClick={()=>viewSiteInfo(id,"Transport")}>Transport Emissions</Button>
-         <Button  color="warning" style={{color:"white"}}  onClick={()=>viewSiteInfo(id,"Gas")}>Stationary Energy (Gas)</Button>
+         <Button style={{background:"#98D0DC", color:"black"}} onClick={()=>viewSiteInfo(id,"Buildings")}>Stationary Energy (Electricity)</Button>
+         <Button style={{background:"#98D0DC", color:"black"}}  onClick={()=>viewSiteInfo(id,"Transport")}>Transport Emissions</Button>
+         <Button  style={{background:"#98D0DC", color:"black"}}  onClick={()=>viewSiteInfo(id,"Gas")}>Stationary Energy (Gas)</Button>
           </ButtonGroup>
         </div>
         }
+
           { tag === "Gas" ? gasData.length === 0 ? null : <Bar data={gasdata_} options={options} /> : _data.length === 0 ? null : <Bar data= {data_} options={options}/> }
            </Col>
           <Col xs="4">
-            <h6>Input Summary</h6>
+          <br/><br/>
+            <h6>Output Summary</h6>
             {tag === "Gas" ? 
             gasData.map((a, index)=>(
               <p style={{borderBottom: "thin solid #999"}}>
@@ -391,10 +400,19 @@ function Neighbourhood() {
         </Col>
         </Row>
        <Row>
-         <Col xs="12"> {id && <BuildingsStackedChart data={id} /> }
-        {id && <BuildingStackedChartInverted data={id} /> }</Col>
-        
+      {tag === "Buildings" ? <>   
+      <Col xs="12"> 
+      {id && <BuildingsStackedChart data={{data: id, tag: "neighbour"}} /> }
+        {id && <BuildingStackedChartInverted data={id} /> }
+        </Col>
+        </> : null }
        </Row>
+</> : 
+<Inputs data = {b}/>
+}
+
+
+
           </Col> 
         </Row>
        
